@@ -9,9 +9,10 @@ import {
 } from "typeorm";
 import { generateEntityId } from "@deal/utils-client";
 import { SoftDeletableEntity } from "../interfaces/soft-deletable.entity";
+import { User } from "./User";
 
 @Entity()
-export class User extends SoftDeletableEntity {
+export class Account extends SoftDeletableEntity {
   @Index({ unique: true, where: "deleted_at IS NULL" })
   @Column()
   email: string;

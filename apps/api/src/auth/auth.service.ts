@@ -76,7 +76,7 @@ export class AuthService {
       delete account.password;
 
       return {
-        id: account.id,
+        account_id: account.id,
         email: account.email,
         user_id: account.user.id,
         username: account.user.username,
