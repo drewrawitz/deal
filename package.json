@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "dotenv -e .env -- turbo run dev --concurrency=14",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "@deal/eslint-config-custom": "workspace:*",
+    "@turbo/gen": "^1.10.13",
+    "dotenv-cli": "latest",
+    "eslint": "^7.32.0",
+    "prettier": "^2.8.8",
+    "turbo": "latest"
+  },
+  "packageManager": "pnpm@8.6.10",
+  "name": "deal"
+}

@@ -1,0 +1,32 @@
+{
+  "name": "@deal/dto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "dev": "tsup src/index.ts --format esm,cjs --watch --dts",
+    "lint": "TIMING=1 eslint src --ext=.ts,.tsx --fix",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "eslint-plugin-react": "^7.32.2",
+    "nestjs-zod": "^2.3.3",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@deal/models": "*",
+    "@deal/types": "*",
+    "@deal/eslint-config-custom": "*",
+    "@deal/tsconfig": "*",
+    "tsup": "^7.1.0",
+    "typescript": "5.0.4"
+  }
+}
