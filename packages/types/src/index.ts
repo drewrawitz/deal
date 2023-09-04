@@ -42,14 +42,19 @@ export type TypedGameEvent = Omit<GameEvents, "data" | "event_type"> &
   SpecificGameEvent;
 
 export type GameState = {
-  currentPlayer: string;
-  actionsTaken: number;
+  currentTurn: {
+    player_id: string;
+    actionsTaken: number;
+    hasDrawnCards: boolean;
+  };
   lastSequence: number;
-  players: Array<{
-    id: string;
-    hand: number[];
-    bank: number[];
-  }>;
+  players: Record<
+    string,
+    {
+      hand: number[];
+      bank: number[];
+    }
+  >;
   deck: number[];
   discardPile: number[];
 };

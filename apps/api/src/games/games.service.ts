@@ -192,10 +192,13 @@ export class GamesService {
   async getGameState(game_id: number): Promise<GameState> {
     // 1. Game Initialization
     const gameState: GameState = {
-      currentPlayer: '',
-      actionsTaken: 0,
+      currentTurn: {
+        player_id: '',
+        actionsTaken: 0,
+        hasDrawnCards: false,
+      },
       lastSequence: 0,
-      players: [],
+      players: {},
       deck: [],
       discardPile: [],
     };
@@ -221,29 +224,27 @@ export class GamesService {
           for (const [playerId, cards] of Object.entries(
             event.data?.dealtCards,
           ) as [string, number[]][]) {
-            const player = gameState.players.find((p) => p.id === playerId);
+            const player = gameState[playerId];
             if (player) {
               player.hand = cards;
             } else {
-              gameState.players.push({
-                id: playerId,
+              gameState.players[playerId] = {
                 hand: cards,
                 bank: [],
-              });
+              };
             }
           }
           break;
         case 'playerTurn':
-          gameState.currentPlayer = event.data.player_id;
-          gameState.actionsTaken = 0;
+          gameState.currentTurn.player_id = event.data.player_id;
+          gameState.currentTurn.actionsTaken = 0;
           break;
         case 'draw':
-          console.log('draw event', event);
-          console.log('deck', gameState);
           gameState.deck.splice(0, event.data.cardsDrawn.length);
-          // gameState.players[event.player_id].hand.push(
-          //   ...event.data.cardsDrawn,
-          // );
+          gameState.players[event.player_id].hand.push(
+            ...event.data.cardsDrawn,
+          );
+          gameState.currentTurn.hasDrawnCards = true;
           break;
       }
     }
@@ -274,13 +275,13 @@ export class GamesService {
     // Get the game state
     const state = await this.getGameState(game_id);
 
-    if (state.currentPlayer !== user.user_id) {
+    if (state.currentTurn.player_id !== user.user_id) {
       throw new BadRequestException('It is not your turn.');
     }
 
     const { action } = body;
     if (action === 'drawCards') {
-      if (state.actionsTaken > 0) {
+      if (state.currentTurn.actionsTaken > 0) {
         throw new BadRequestException(
           'You have already drawn your cards this turn.',
         );
