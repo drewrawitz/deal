@@ -9,7 +9,7 @@ import {
 import { GamePlayers } from "./GamePlayers";
 import { GameEvents } from "./GameEvents";
 
-enum GameStatus {
+export enum GameStatus {
   WAITING = "waiting",
   IN_PROGRESS = "in_progress",
   ABANDONDED = "abandoned",
@@ -30,7 +30,7 @@ export class Game {
   status: GameStatus;
 
   @OneToMany(() => GamePlayers, (players) => players.game, {
-    cascade: ["remove", "insert"],
+    cascade: true,
   })
   players: GamePlayers[];
 
