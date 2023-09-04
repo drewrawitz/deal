@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CardsService } from '../cards/cards.service';
-import { CurrentUser } from '@deal/types';
+import { CurrentUser, GameState, TypedGameEvent } from '@deal/types';
 import { Game, GameStatus, GameEvents, GamePlayers } from '@deal/models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -180,5 +180,62 @@ export class GamesService {
     });
 
     return await this.gamePlayersRepo.save(gamePlayer);
+  }
+
+  async fetchGameEvents(game_id: number): Promise<TypedGameEvent[]> {
+    const data = await this.eventsRepo.find({
+      where: { game_id },
+      order: { sequence: 'ASC' },
+    });
+
+    return data as TypedGameEvent[];
+  }
+
+  async getGameState(game_id: number): Promise<GameState> {
+    // 1. Game Initialization
+    const gameState: GameState = {
+      currentPlayer: '',
+      actionsTaken: 0,
+      players: [],
+      deck: [],
+      discardPile: [],
+    };
+
+    // 2. Event Processing
+    const events = await this.fetchGameEvents(game_id);
+    events.sort((a, b) => a.sequence - b.sequence);
+
+    for (const event of events) {
+      switch (event.event_type) {
+        case 'shuffle':
+          gameState.deck = event.data.cards;
+          break;
+        case 'deal':
+          gameState.deck = event.data.remainingDeck;
+
+          // Assign cards to players based on the event data.
+          for (const [playerId, cards] of Object.entries(
+            event.data?.dealtCards,
+          ) as [string, number[]][]) {
+            const player = gameState.players.find((p) => p.id === playerId);
+            if (player) {
+              player.hand = cards;
+            } else {
+              gameState.players.push({
+                id: playerId,
+                hand: cards,
+                bank: [],
+              });
+            }
+          }
+          break;
+        case 'playerTurn':
+          gameState.currentPlayer = event.data.player_id;
+          gameState.actionsTaken = 0;
+          break;
+      }
+    }
+
+    return gameState;
   }
 }
