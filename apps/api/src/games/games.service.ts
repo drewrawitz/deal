@@ -111,7 +111,28 @@ export class GamesService {
 
         await transactionalEntityManager.save(GameEvents, dealEvent);
 
-        return dealEvent;
+        // 4. Determine the starting player (based on position)
+        const startingPlayer = game.players.find((p) => p.position === 1);
+
+        if (!startingPlayer) {
+          throw new Error('No player with position 1 found.'); // This should ideally never happen
+        }
+
+        // 5. Create a playerTurn event for the starting player
+        const playerTurnEvent = this.eventsRepo.create({
+          game_id,
+          sequence: 3,
+          event_type: 'playerTurn',
+          data: {
+            player_id: startingPlayer.player_id,
+            action: 'draw',
+            cardsToDraw: 2,
+          },
+        });
+
+        await transactionalEntityManager.save(GameEvents, playerTurnEvent);
+
+        return playerTurnEvent;
       },
     );
   }
