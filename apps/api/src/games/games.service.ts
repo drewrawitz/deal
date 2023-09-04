@@ -8,6 +8,7 @@ import { CurrentUser, GameState, TypedGameEvent } from '@deal/types';
 import { Game, GameStatus, GameEvents, GamePlayers } from '@deal/models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { GameActionBodyDto } from '@deal/dto';
 
 @Injectable()
 export class GamesService {
@@ -105,7 +106,6 @@ export class GamesService {
           event_type: 'deal',
           data: {
             dealtCards,
-            remainingDeck: cards,
           },
         });
 
@@ -125,8 +125,6 @@ export class GamesService {
           event_type: 'playerTurn',
           data: {
             player_id: startingPlayer.player_id,
-            action: 'draw',
-            cardsToDraw: 2,
           },
         });
 
@@ -196,6 +194,7 @@ export class GamesService {
     const gameState: GameState = {
       currentPlayer: '',
       actionsTaken: 0,
+      lastSequence: 0,
       players: [],
       deck: [],
       discardPile: [],
@@ -205,13 +204,18 @@ export class GamesService {
     const events = await this.fetchGameEvents(game_id);
     events.sort((a, b) => a.sequence - b.sequence);
 
+    const lastSequence = events?.[events.length - 1]?.sequence ?? 0;
+    gameState.lastSequence = lastSequence;
+
     for (const event of events) {
       switch (event.event_type) {
         case 'shuffle':
           gameState.deck = event.data.cards;
           break;
         case 'deal':
-          gameState.deck = event.data.remainingDeck;
+          const numberOfPlayers = Object.keys(event.data.dealtCards).length;
+          const cardsDealt = numberOfPlayers * 5;
+          gameState.deck.splice(0, cardsDealt);
 
           // Assign cards to players based on the event data.
           for (const [playerId, cards] of Object.entries(
@@ -233,9 +237,74 @@ export class GamesService {
           gameState.currentPlayer = event.data.player_id;
           gameState.actionsTaken = 0;
           break;
+        case 'draw':
+          console.log('draw event', event);
+          console.log('deck', gameState);
+          gameState.deck.splice(0, event.data.cardsDrawn.length);
+          // gameState.players[event.player_id].hand.push(
+          //   ...event.data.cardsDrawn,
+          // );
+          break;
       }
     }
 
     return gameState;
+  }
+
+  async gameAction(
+    user: CurrentUser,
+    game_id: number,
+    body: GameActionBodyDto,
+  ) {
+    const game = await this.gameRepo
+      .createQueryBuilder('game')
+      .where('game.id = :id', { id: game_id })
+      .getOne();
+
+    // Make sure this Game exists
+    if (!game) {
+      throw new NotFoundException();
+    }
+
+    // Make sure the Game is still in progress
+    if (game.status !== 'in_progress') {
+      throw new BadRequestException('Game is currently not in progress.');
+    }
+
+    // Get the game state
+    const state = await this.getGameState(game_id);
+
+    if (state.currentPlayer !== user.user_id) {
+      throw new BadRequestException('It is not your turn.');
+    }
+
+    const { action } = body;
+    if (action === 'drawCards') {
+      if (state.actionsTaken > 0) {
+        throw new BadRequestException(
+          'You have already drawn your cards this turn.',
+        );
+      }
+
+      // Figure out how many cards to draw.
+      const cardsToDraw = 2;
+      const cardsDrawn = state.deck.splice(0, cardsToDraw);
+
+      const event = this.eventsRepo.create({
+        game_id,
+        player_id: user.user_id,
+        sequence: state.lastSequence + 1,
+        event_type: 'draw',
+        data: {
+          cardsDrawn,
+        },
+      });
+
+      await this.eventsRepo.save(event);
+    }
+
+    return {
+      state,
+    };
   }
 }

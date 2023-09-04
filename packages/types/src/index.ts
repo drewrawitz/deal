@@ -22,6 +22,13 @@ export interface DealEvent {
   };
 }
 
+export interface DrawEvent {
+  event_type: "draw";
+  data: {
+    cardsDrawn: number[];
+  };
+}
+
 export interface PlayerTurnEvent {
   event_type: "playerTurn";
   data: {
@@ -29,7 +36,7 @@ export interface PlayerTurnEvent {
   };
 }
 
-type SpecificGameEvent = ShuffleEvent | DealEvent | PlayerTurnEvent;
+type SpecificGameEvent = ShuffleEvent | DealEvent | PlayerTurnEvent | DrawEvent;
 
 export type TypedGameEvent = Omit<GameEvents, "data" | "event_type"> &
   SpecificGameEvent;
@@ -37,6 +44,7 @@ export type TypedGameEvent = Omit<GameEvents, "data" | "event_type"> &
 export type GameState = {
   currentPlayer: string;
   actionsTaken: number;
+  lastSequence: number;
   players: Array<{
     id: string;
     hand: number[];

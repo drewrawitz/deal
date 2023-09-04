@@ -2,6 +2,7 @@ import {
   Request,
   Controller,
   Param,
+  Body,
   Get,
   Post,
   UseGuards,
@@ -9,7 +10,7 @@ import {
 import { GamesService } from './games.service';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { Request as RequestType } from 'express';
-import { GameIdParamDto } from '@deal/dto';
+import { GameActionBodyDto, GameIdParamDto } from '@deal/dto';
 
 @Controller({
   path: 'games',
@@ -34,6 +35,16 @@ export class GamesController {
   @Post('/:game_id/join')
   async joinGame(@Request() req: RequestType, @Param() params: GameIdParamDto) {
     return this.gamesService.joinGame(req.user, params.game_id);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post('/:game_id/action')
+  async gameAction(
+    @Request() req: RequestType,
+    @Param() params: GameIdParamDto,
+    @Body() body: GameActionBodyDto,
+  ) {
+    return this.gamesService.gameAction(req.user, params.game_id, body);
   }
 
   @UseGuards(AuthenticatedGuard)
