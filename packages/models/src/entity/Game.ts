@@ -6,6 +6,7 @@ import {
   OneToMany,
 } from "typeorm";
 import { GamePlayers } from "./GamePlayers";
+import { GameEvents } from "./GameEvents";
 
 enum GameStatus {
   WAITING = "waiting",
@@ -31,6 +32,11 @@ export class Game {
     cascade: ["remove"],
   })
   players: GamePlayers[];
+
+  @OneToMany(() => GameEvents, (events) => events.game, {
+    cascade: ["remove"],
+  })
+  events: GameEvents[];
 
   @Column({ type: "timestamptz", nullable: true })
   started_at: Date | null;

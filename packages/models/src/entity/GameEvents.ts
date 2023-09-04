@@ -5,12 +5,13 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
 } from "typeorm";
 import { Game } from "./Game";
 import { User } from "./User";
 
 @Entity()
-export class GamePlayers {
+export class GameEvents {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -18,18 +19,27 @@ export class GamePlayers {
   @Column()
   game_id: number;
 
-  @ManyToOne(() => Game, (game) => game.players)
+  @ManyToOne(() => Game, (game) => game.events)
   @JoinColumn({ name: "game_id" })
   game: Game;
 
   @Index()
-  @Column()
-  player_id: number;
+  @Column({ nullable: true })
+  player_id: number | null;
 
-  @ManyToOne(() => User, (user) => user.games)
+  @ManyToOne(() => User, (user) => user.game_events)
   @JoinColumn({ name: "player_id" })
   player: User;
 
   @Column({ type: "smallint" })
-  position: number;
+  sequence: number;
+
+  @Column()
+  event_type: string;
+
+  @Column({ type: "jsonb", nullable: true })
+  data: Record<string, unknown>;
+
+  @CreateDateColumn({ type: "timestamptz" })
+  created_at: Date;
 }
