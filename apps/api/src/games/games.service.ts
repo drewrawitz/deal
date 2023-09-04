@@ -37,7 +37,7 @@ export class GamesService {
   async startGame(game_id: number) {
     const game = await this.gameRepo
       .createQueryBuilder('game')
-      .loadRelationCountAndMap('game.player_count', 'game.players')
+      .leftJoinAndSelect('game.players', 'players')
       .where('game.id = :id', { id: game_id })
       .getOne();
 
@@ -46,13 +46,15 @@ export class GamesService {
       throw new NotFoundException();
     }
 
+    const numPlayers = game.players.length;
+
     // Make sure the Game has not already started
     if (game.status !== 'waiting') {
       throw new BadRequestException('Game has already started');
     }
 
     // Make sure the Game has at least 2 players joined
-    if (game.player_count < 2) {
+    if (numPlayers < 2) {
       throw new BadRequestException('Not enough players to start the game.');
     }
 
@@ -69,7 +71,7 @@ export class GamesService {
         await transactionalEntityManager.save(Game, game);
 
         // 2. Create a new event for the shuffle
-        const event = this.eventsRepo.create({
+        const shuffleEvent = this.eventsRepo.create({
           game_id,
           sequence: 1,
           event_type: 'shuffle',
@@ -78,9 +80,38 @@ export class GamesService {
           },
         });
 
-        await transactionalEntityManager.save(GameEvents, event);
+        await transactionalEntityManager.save(GameEvents, shuffleEvent);
 
-        return event;
+        // Now, let's deal the cards.
+        const dealtCards: Record<number, number[]> = {};
+
+        for (let i = 0; i < 5 * numPlayers; i++) {
+          const currentPlayerId = game.players[i % numPlayers].player_id; // This ensures an alternating pattern.
+
+          if (!dealtCards[currentPlayerId]) {
+            dealtCards[currentPlayerId] = [];
+          }
+
+          dealtCards[currentPlayerId].push(cards[i]);
+        }
+
+        // Remove the dealt cards from the deck
+        cards.splice(0, 5 * numPlayers);
+
+        // 3. Create a new event for the deal
+        const dealEvent = this.eventsRepo.create({
+          game_id,
+          sequence: 2,
+          event_type: 'deal',
+          data: {
+            dealtCards,
+            remainingDeck: cards,
+          },
+        });
+
+        await transactionalEntityManager.save(GameEvents, dealEvent);
+
+        return dealEvent;
       },
     );
   }
