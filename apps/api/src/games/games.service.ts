@@ -21,6 +21,7 @@ export class GamesService {
     @InjectRepository(GameEvents)
     private readonly eventsRepo: Repository<GameEvents>,
     private cardsService: CardsService,
+    private gameEngine: GameEngine,
   ) {}
 
   async createGame(user: CurrentUser) {
@@ -217,60 +218,83 @@ export class GamesService {
     return engine.state;
   }
 
-  async gameAction(
-    user: CurrentUser,
-    game_id: number,
-    body: GameActionBodyDto,
-  ) {
+  async validateGame(game_id: number): Promise<Game> {
     const game = await this.gameRepo
       .createQueryBuilder('game')
       .where('game.id = :id', { id: game_id })
       .getOne();
 
-    // Make sure this Game exists
-    if (!game) {
-      throw new NotFoundException();
-    }
+    if (!game) throw new NotFoundException();
 
-    // Make sure the Game is still in progress
-    if (game.status !== 'in_progress') {
+    if (game.status !== 'in_progress')
       throw new BadRequestException('Game is currently not in progress.');
-    }
 
-    // Get the game state
-    const state = await this.getGameState(game_id);
+    return game;
+  }
 
-    if (state.currentTurn.player_id !== user.user_id) {
+  async validatePlayerTurn(
+    gameState: GameState,
+    user_id: string,
+  ): Promise<void> {
+    if (gameState.currentTurn.player_id !== user_id)
       throw new BadRequestException('It is not your turn.');
+  }
+
+  async handleDrawCardsAction(
+    game_id: number,
+    user_id: string,
+    state: GameState,
+  ) {
+    if (state.currentTurn.hasDrawnCards) {
+      throw new BadRequestException(
+        'You have already drawn your cards this turn.',
+      );
     }
 
-    const { action } = body;
-    if (action === 'drawCards') {
-      if (state.currentTurn.actionsTaken > 0) {
-        throw new BadRequestException(
-          'You have already drawn your cards this turn.',
+    const cardsToDraw = 2;
+    const cardsDrawn = state.deck.splice(0, cardsToDraw);
+
+    await this.createAndSaveEvent(game_id, user_id, 'draw', { cardsDrawn });
+  }
+
+  async createAndSaveEvent(
+    game_id: number,
+    userId: string,
+    eventType: string,
+    data: any,
+  ): Promise<void> {
+    const event = this.eventsRepo.create({
+      game_id,
+      player_id: userId,
+      sequence: this.gameEngine.state.lastSequence + 1,
+      event_type: eventType,
+      data,
+    });
+    await this.eventsRepo.save(event);
+  }
+
+  async gameAction(
+    user: CurrentUser,
+    game_id: number,
+    body: GameActionBodyDto,
+  ) {
+    await this.validateGame(game_id);
+
+    const state = await this.getGameState(game_id);
+    this.gameEngine = new GameEngine(state);
+
+    await this.validatePlayerTurn(this.gameEngine.state, user.user_id);
+
+    switch (body.action) {
+      case 'drawCards':
+        await this.handleDrawCardsAction(
+          game_id,
+          user.user_id,
+          this.gameEngine.state,
         );
-      }
-
-      // Figure out how many cards to draw.
-      const cardsToDraw = 2;
-      const cardsDrawn = state.deck.splice(0, cardsToDraw);
-
-      const event = this.eventsRepo.create({
-        game_id,
-        player_id: user.user_id,
-        sequence: state.lastSequence + 1,
-        event_type: 'draw',
-        data: {
-          cardsDrawn,
-        },
-      });
-
-      await this.eventsRepo.save(event);
+        break;
     }
 
-    return {
-      state,
-    };
+    return this.gameEngine.state;
   }
 }
