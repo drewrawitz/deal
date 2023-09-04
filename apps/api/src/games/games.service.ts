@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CardsService } from '../cards/cards.service';
 import { CurrentUser } from '@deal/types';
-import { Game, GameStatus, GameEvents } from '@deal/models';
+import { Game, GameStatus, GameEvents, GamePlayers } from '@deal/models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -14,6 +14,8 @@ export class GamesService {
   constructor(
     @InjectRepository(Game)
     private readonly gameRepo: Repository<Game>,
+    @InjectRepository(GamePlayers)
+    private readonly gamePlayersRepo: Repository<GamePlayers>,
     @InjectRepository(GameEvents)
     private readonly eventsRepo: Repository<GameEvents>,
     private cardsService: CardsService,
@@ -81,5 +83,50 @@ export class GamesService {
         return event;
       },
     );
+  }
+
+  async joinGame(user: CurrentUser, game_id: number) {
+    const game = await this.gameRepo
+      .createQueryBuilder('game')
+      .leftJoinAndSelect('game.players', 'players')
+      .where('game.id = :id', { id: game_id })
+      .getOne();
+
+    // Make sure this Game exists
+    if (!game) {
+      throw new NotFoundException();
+    }
+
+    // Make sure the Game has not already started
+    if (game.status !== 'waiting') {
+      throw new BadRequestException('Game has already started');
+    }
+
+    // Make sure the Game doesn't have too many players
+    if (game.players.length >= 4) {
+      throw new BadRequestException('This game is full.');
+    }
+
+    // Check if this player has already joined this game
+    const playerIds = game.players.map((p) => p.player_id);
+    if (playerIds.includes(user.user_id)) {
+      throw new BadRequestException('You have already joined this game.');
+    }
+
+    // Determine the position for the new player
+    const positionsTaken = new Set(game.players.map((p) => p.position));
+    let newPosition = 1;
+    while (positionsTaken.has(newPosition)) {
+      newPosition++;
+    }
+
+    // All looks valid. Add the player to the game
+    const gamePlayer = this.gamePlayersRepo.create({
+      game_id: game_id,
+      player_id: user.user_id,
+      position: newPosition,
+    });
+
+    return await this.gamePlayersRepo.save(gamePlayer);
   }
 }

@@ -3,10 +3,13 @@ import { GamesController } from './games.controller';
 import { GamesService } from './games.service';
 import { CardsModule } from '../cards/cards.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Game, GameEvents } from '@deal/models';
+import { Game, GameEvents, GamePlayers } from '@deal/models';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Game, GameEvents]), CardsModule],
+  imports: [
+    TypeOrmModule.forFeature([Game, GameEvents, GamePlayers]),
+    CardsModule,
+  ],
   controllers: [GamesController],
   providers: [GamesService],
 })

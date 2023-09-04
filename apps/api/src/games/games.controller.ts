@@ -22,4 +22,10 @@ export class GamesController {
   async startGame(@Param() params: GameIdParamDto) {
     return this.gamesService.startGame(params.game_id);
   }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post('/:game_id/join')
+  async joinGame(@Request() req: RequestType, @Param() params: GameIdParamDto) {
+    return this.gamesService.joinGame(req.user, params.game_id);
+  }
 }
