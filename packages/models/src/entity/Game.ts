@@ -47,4 +47,6 @@ export class Game {
 
   @CreateDateColumn({ type: "timestamptz" })
   created_at: Date;
+
+  player_count?: number;
 }

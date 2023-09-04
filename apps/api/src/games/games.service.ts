@@ -33,9 +33,13 @@ export class GamesService {
   }
 
   async startGame(game_id: number) {
-    // Make sure this Game exists
-    const game = await this.gameRepo.findOneBy({ id: game_id });
+    const game = await this.gameRepo
+      .createQueryBuilder('game')
+      .loadRelationCountAndMap('game.player_count', 'game.players')
+      .where('game.id = :id', { id: game_id })
+      .getOne();
 
+    // Make sure this Game exists
     if (!game) {
       throw new NotFoundException();
     }
@@ -43,6 +47,11 @@ export class GamesService {
     // Make sure the Game has not already started
     if (game.status !== 'waiting') {
       throw new BadRequestException('Game has already started');
+    }
+
+    // Make sure the Game has at least 2 players joined
+    if (game.player_count < 2) {
+      throw new BadRequestException('Not enough players to start the game.');
     }
 
     // Shuffle the deck
