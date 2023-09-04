@@ -12,11 +12,10 @@ export class User extends SoftDeletableEntity {
   @Column({ nullable: true })
   avatar: string;
 
-  @OneToMany(() => GamePlayers, (players) => players.player)
+  @OneToMany(() => GamePlayers, (players) => players.player, {
+    cascade: ["remove"],
+  })
   games: GamePlayers[];
-
-  @OneToMany(() => GamePlayers, (players) => players.player)
-  game_events: GameEvents[];
 
   @Column({ type: "jsonb", nullable: true })
   metadata: Record<string, unknown>;

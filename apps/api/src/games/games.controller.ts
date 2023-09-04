@@ -13,7 +13,6 @@ export class GamesController {
   @UseGuards(AuthenticatedGuard)
   @Post()
   async createGame(@Request() req: RequestType) {
-    console.log(req.user);
-    return this.gamesService.createGame();
+    return this.gamesService.createGame(req.user);
   }
 }

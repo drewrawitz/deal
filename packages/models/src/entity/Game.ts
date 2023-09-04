@@ -4,6 +4,7 @@ import {
   Column,
   PrimaryGeneratedColumn,
   OneToMany,
+  CreateDateColumn,
 } from "typeorm";
 import { GamePlayers } from "./GamePlayers";
 import { GameEvents } from "./GameEvents";
@@ -29,7 +30,7 @@ export class Game {
   status: GameStatus;
 
   @OneToMany(() => GamePlayers, (players) => players.game, {
-    cascade: ["remove"],
+    cascade: ["remove", "insert"],
   })
   players: GamePlayers[];
 
@@ -43,4 +44,7 @@ export class Game {
 
   @Column({ type: "timestamptz", nullable: true })
   finished_at: Date | null;
+
+  @CreateDateColumn({ type: "timestamptz" })
+  created_at: Date;
 }

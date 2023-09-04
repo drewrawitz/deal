@@ -10,15 +10,15 @@ export class CardsService {
     private readonly cardRepository: Repository<Card>,
   ) {}
 
-  async getShuffledDeck(): Promise<Card[]> {
+  async getShuffledDeck(): Promise<number[]> {
     // Fetch all cards from the database
     const cards = await this.cardRepository.find();
 
     // Duplicate each card according to its deck_quantity
-    const deck: Card[] = [];
+    const deck: number[] = [];
     for (const card of cards) {
       for (let i = 0; i < card.deck_quantity; i++) {
-        deck.push({ ...card });
+        deck.push(card.id);
       }
     }
 

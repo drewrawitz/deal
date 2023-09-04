@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
 } from "typeorm";
 import { Game } from "./Game";
 import { User } from "./User";
@@ -24,7 +25,7 @@ export class GamePlayers {
 
   @Index()
   @Column()
-  player_id: number;
+  player_id: string;
 
   @ManyToOne(() => User, (user) => user.games)
   @JoinColumn({ name: "player_id" })
@@ -32,4 +33,7 @@ export class GamePlayers {
 
   @Column({ type: "smallint" })
   position: number;
+
+  @CreateDateColumn({ type: "timestamptz" })
+  joined_at: Date;
 }

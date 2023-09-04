@@ -25,9 +25,9 @@ export class GameEvents {
 
   @Index()
   @Column({ nullable: true })
-  player_id: number | null;
+  player_id: string | null;
 
-  @ManyToOne(() => User, (user) => user.game_events)
+  @ManyToOne(() => User)
   @JoinColumn({ name: "player_id" })
   player: User;
 
