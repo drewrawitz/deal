@@ -9,6 +9,7 @@ import { Game, GameStatus, GameEvents, GamePlayers } from '@deal/models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GameActionBodyDto } from '@deal/dto';
+import { GameEngine } from './game.engine';
 
 @Injectable()
 export class GamesService {
@@ -191,7 +192,7 @@ export class GamesService {
 
   async getGameState(game_id: number): Promise<GameState> {
     // 1. Game Initialization
-    const gameState: GameState = {
+    const initialState: GameState = {
       currentTurn: {
         player_id: '',
         actionsTaken: 0,
@@ -203,53 +204,17 @@ export class GamesService {
       discardPile: [],
     };
 
+    const engine = new GameEngine(initialState);
+
     // 2. Event Processing
     const events = await this.fetchGameEvents(game_id);
     events.sort((a, b) => a.sequence - b.sequence);
 
-    const lastSequence = events?.[events.length - 1]?.sequence ?? 0;
-    gameState.lastSequence = lastSequence;
-
     for (const event of events) {
-      switch (event.event_type) {
-        case 'shuffle':
-          gameState.deck = event.data.cards;
-          break;
-        case 'deal':
-          const numberOfPlayers = Object.keys(event.data.dealtCards).length;
-          const cardsDealt = numberOfPlayers * 5;
-          gameState.deck.splice(0, cardsDealt);
-
-          // Assign cards to players based on the event data.
-          for (const [playerId, cards] of Object.entries(
-            event.data?.dealtCards,
-          ) as [string, number[]][]) {
-            const player = gameState[playerId];
-            if (player) {
-              player.hand = cards;
-            } else {
-              gameState.players[playerId] = {
-                hand: cards,
-                bank: [],
-              };
-            }
-          }
-          break;
-        case 'playerTurn':
-          gameState.currentTurn.player_id = event.data.player_id;
-          gameState.currentTurn.actionsTaken = 0;
-          break;
-        case 'draw':
-          gameState.deck.splice(0, event.data.cardsDrawn.length);
-          gameState.players[event.player_id].hand.push(
-            ...event.data.cardsDrawn,
-          );
-          gameState.currentTurn.hasDrawnCards = true;
-          break;
-      }
+      engine.applyEvent(event);
     }
 
-    return gameState;
+    return engine.state;
   }
 
   async gameAction(
