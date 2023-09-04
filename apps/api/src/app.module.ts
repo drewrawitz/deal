@@ -3,7 +3,14 @@ import { APP_PIPE } from '@nestjs/core';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User, Account, Card } from '@deal/models';
+import {
+  User,
+  Account,
+  Card,
+  Game,
+  GameEvents,
+  GamePlayers,
+} from '@deal/models';
 import { AuthModule } from './auth/auth.module';
 import { MeModule } from './me/me.module';
 import { GamesModule } from './games/games.module';
@@ -21,7 +28,7 @@ import { CardsModule } from './cards/cards.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      entities: [User, Account, Card],
+      entities: [User, Account, Card, Game, GameEvents, GamePlayers],
       synchronize: false,
     }),
     AuthModule,
