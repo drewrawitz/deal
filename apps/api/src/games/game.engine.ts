@@ -1,8 +1,10 @@
+import { Card } from '@deal/models';
 import {
   BankEvent,
   DealEvent,
   DrawEvent,
   GameState,
+  PlayEvent,
   PlayerTurnEvent,
   ShuffleEvent,
   TypedGameEvent,
@@ -10,9 +12,15 @@ import {
 
 export class GameEngine {
   private gameState: GameState;
+  private cardsData: Card[];
 
-  constructor(initialState: GameState) {
+  constructor(initialState: GameState, cards?: Card[]) {
     this.gameState = initialState;
+    this.cardsData = cards;
+  }
+
+  private getCardById(card_id: number) {
+    return this.cardsData.find((card) => card.id === card_id);
   }
 
   // Event handlers
@@ -73,6 +81,18 @@ export class GameEngine {
     this.gameState.currentTurn.actionsTaken++;
   }
 
+  private handlePlayEvent(event: PlayEvent) {
+    const card = this.getCardById(event.data.card);
+
+    if (!card) {
+      throw new Error(`Card ${event.data.card} not found`);
+    }
+
+    if (card.type === 'property') {
+      console.log('PROP!!');
+    }
+  }
+
   // Public method to apply an event
   applyEvent(event: TypedGameEvent) {
     this.gameState.lastSequence = event.sequence;
@@ -92,6 +112,9 @@ export class GameEngine {
         break;
       case 'bank':
         this.handleBankEvent(event);
+        break;
+      case 'play':
+        this.handlePlayEvent(event);
         break;
     }
   }

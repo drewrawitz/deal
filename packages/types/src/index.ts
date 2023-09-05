@@ -39,6 +39,14 @@ export interface BankEvent {
   };
 }
 
+export interface PlayEvent {
+  event_type: "play";
+  player_id: string;
+  data: {
+    card: number;
+  };
+}
+
 export interface PlayerTurnEvent {
   event_type: "playerTurn";
   data: {
@@ -51,7 +59,8 @@ type SpecificGameEvent =
   | DealEvent
   | PlayerTurnEvent
   | DrawEvent
-  | BankEvent;
+  | BankEvent
+  | PlayEvent;
 
 export type TypedGameEvent = Omit<GameEvents, "data" | "event_type"> &
   SpecificGameEvent;
