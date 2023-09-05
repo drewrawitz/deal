@@ -1,4 +1,5 @@
 import {
+  BankEvent,
   DealEvent,
   DrawEvent,
   GameState,
@@ -53,6 +54,24 @@ export class GameEngine {
     this.gameState.currentTurn.hasDrawnCards = true;
   }
 
+  private handleBankEvent(event: BankEvent) {
+    // Add the card to the bank pile
+    this.gameState.players[event.player_id].bank.push(event.data.card);
+
+    // Find the index of the first occurrence of the card in the user's hand
+    const cardIndex = this.gameState.players[event.player_id].hand.indexOf(
+      event.data.card,
+    );
+
+    // If the card is found, remove it from the hand
+    if (cardIndex !== -1) {
+      this.gameState.players[event.player_id].hand.splice(cardIndex, 1);
+    }
+
+    // Increment the number of actions taken
+    this.gameState.currentTurn.actionsTaken++;
+  }
+
   // Public method to apply an event
   applyEvent(event: TypedGameEvent) {
     this.gameState.lastSequence = event.sequence;
@@ -70,13 +89,10 @@ export class GameEngine {
       case 'draw':
         this.handleDrawEvent(event);
         break;
+      case 'bank':
+        this.handleBankEvent(event);
+        break;
     }
-  }
-
-  // Methods for other game actions, validations, etc.
-  validatePlayerTurn(userId: string): boolean {
-    console.log('validate player turn', userId);
-    return true;
   }
 
   // Getter for the game state

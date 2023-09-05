@@ -5,11 +5,17 @@ import {
 } from '@nestjs/common';
 import { CardsService } from '../cards/cards.service';
 import { CurrentUser, GameState, TypedGameEvent } from '@deal/types';
-import { Game, GameStatus, GameEvents, GamePlayers } from '@deal/models';
+import { Game, GameStatus, GameEvents, GamePlayers, Card } from '@deal/models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GameActionBodyDto } from '@deal/dto';
 import { GameEngine } from './game.engine';
+
+interface HandleActionParams {
+  game_id: number;
+  user_id: string;
+  state: GameState;
+}
 
 @Injectable()
 export class GamesService {
@@ -240,11 +246,9 @@ export class GamesService {
       throw new BadRequestException('It is not your turn.');
   }
 
-  async handleDrawCardsAction(
-    game_id: number,
-    user_id: string,
-    state: GameState,
-  ) {
+  async handleDrawCardsAction(params: HandleActionParams) {
+    const { game_id, user_id, state } = params;
+
     if (state.currentTurn.hasDrawnCards) {
       throw new BadRequestException(
         'You have already drawn your cards this turn.',
@@ -257,17 +261,50 @@ export class GamesService {
     await this.createAndSaveEvent(game_id, user_id, 'draw', { cardsDrawn });
   }
 
+  async handlePlaceCardAction(
+    params: HandleActionParams,
+    body: GameActionBodyDto,
+  ) {
+    const { game_id, user_id } = params;
+    const { data } = body;
+
+    // Make sure the right data is provided
+    if (!data?.card) {
+      throw new BadRequestException('You must provide a Card ID');
+    }
+
+    if (!data?.placement) {
+      throw new BadRequestException('You must provide a placement');
+    }
+
+    // Make sure this player has this card in their hand
+    const playerHand = params.state.players[params.user_id].hand;
+
+    if (!playerHand.includes(data.card)) {
+      throw new BadRequestException("You don't have that card in your hand.");
+    }
+
+    const card = await this.cardsService.getCardById(data.card);
+
+    if (data.placement === 'bank') {
+      await this.createAndSaveEvent(game_id, user_id, 'bank', {
+        card: card.id,
+        value: card.value,
+      });
+    }
+  }
+
   async createAndSaveEvent(
     game_id: number,
-    userId: string,
-    eventType: string,
+    player_id: string,
+    event_type: string,
     data: any,
   ): Promise<void> {
     const event = this.eventsRepo.create({
       game_id,
-      player_id: userId,
+      player_id,
       sequence: this.gameEngine.state.lastSequence + 1,
-      event_type: eventType,
+      event_type,
       data,
     });
     await this.eventsRepo.save(event);
@@ -284,14 +321,18 @@ export class GamesService {
     this.gameEngine = new GameEngine(state);
 
     await this.validatePlayerTurn(this.gameEngine.state, user.user_id);
+    const params = {
+      game_id,
+      user_id: user.user_id,
+      state: this.gameEngine.state,
+    };
 
     switch (body.action) {
       case 'drawCards':
-        await this.handleDrawCardsAction(
-          game_id,
-          user.user_id,
-          this.gameEngine.state,
-        );
+        await this.handleDrawCardsAction(params);
+        break;
+      case 'placeCard':
+        await this.handlePlaceCardAction(params, body);
         break;
     }
 

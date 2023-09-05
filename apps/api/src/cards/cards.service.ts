@@ -30,4 +30,8 @@ export class CardsService {
 
     return deck;
   }
+
+  async getCardById(card_id: number) {
+    return await this.cardRepository.findOneBy({ id: card_id });
+  }
 }
