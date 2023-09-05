@@ -242,12 +242,18 @@ export class GamesService {
     gameState: GameState,
     user_id: string,
   ): Promise<void> {
-    if (gameState.currentTurn.player_id !== user_id)
+    if (gameState.players[user_id] === undefined) {
+      throw new BadRequestException('You are not part of this game.');
+    }
+
+    if (gameState.currentTurn.player_id !== user_id) {
       throw new BadRequestException('It is not your turn.');
+    }
   }
 
   async handleDrawCardsAction(params: HandleActionParams) {
     const { game_id, user_id, state } = params;
+    const playerHand = state.players[params.user_id].hand;
 
     if (state.currentTurn.hasDrawnCards) {
       throw new BadRequestException(
@@ -255,7 +261,8 @@ export class GamesService {
       );
     }
 
-    const cardsToDraw = 2;
+    // If the user is out of cards, they draw 5 new cards.  Otherwise, pick up 2
+    const cardsToDraw = playerHand.length === 0 ? 5 : 2;
     const cardsDrawn = state.deck.splice(0, cardsToDraw);
 
     await this.createAndSaveEvent(game_id, user_id, 'draw', { cardsDrawn });
@@ -329,6 +336,12 @@ export class GamesService {
     if (!state.currentTurn.hasDrawnCards) {
       throw new BadRequestException(
         'You must draw cards before ending your turn.',
+      );
+    }
+
+    if (state.currentTurn.actionsTaken > 2) {
+      throw new BadRequestException(
+        "You've already taken your 3 actions. You must end your turn.",
       );
     }
 
