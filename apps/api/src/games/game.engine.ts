@@ -46,6 +46,7 @@ export class GameEngine {
   private handlePlayerTurnEvent(event: PlayerTurnEvent) {
     this.gameState.currentTurn.player_id = event.data.player_id;
     this.gameState.currentTurn.actionsTaken = 0;
+    this.gameState.currentTurn.hasDrawnCards = false;
   }
 
   private handleDrawEvent(event: DrawEvent) {

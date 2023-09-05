@@ -261,11 +261,53 @@ export class GamesService {
     await this.createAndSaveEvent(game_id, user_id, 'draw', { cardsDrawn });
   }
 
+  getNextPlayerTurn(params: HandleActionParams) {
+    const { user_id, state } = params;
+
+    const userIds = Object.keys(state.players);
+    const currentIndex = userIds.indexOf(user_id);
+    let nextIndex;
+
+    if (currentIndex === userIds.length - 1) {
+      // If current user is the last in the array, set the next user as the first user.
+      nextIndex = 0;
+    } else {
+      // Otherwise, just move to the next user.
+      nextIndex = currentIndex + 1;
+    }
+
+    return userIds[nextIndex];
+  }
+
+  async handleEndTurnAction(params: HandleActionParams) {
+    const { game_id, user_id, state } = params;
+    const playerHand = state.players[params.user_id].hand;
+
+    if (playerHand.length > 7) {
+      throw new BadRequestException(
+        'You must discard down to 7 cards before ending your turn.',
+      );
+    }
+
+    if (!state.currentTurn.hasDrawnCards) {
+      throw new BadRequestException(
+        'You must draw cards before ending your turn.',
+      );
+    }
+
+    const nextPlayerId = this.getNextPlayerTurn(params);
+
+    await this.createAndSaveEvent(game_id, user_id, 'end', {});
+    await this.createAndSaveEvent(game_id, null, 'playerTurn', {
+      player_id: nextPlayerId,
+    });
+  }
+
   async handlePlaceCardAction(
     params: HandleActionParams,
     body: GameActionBodyDto,
   ) {
-    const { game_id, user_id } = params;
+    const { game_id, user_id, state } = params;
     const { data } = body;
 
     // Make sure the right data is provided
@@ -282,6 +324,12 @@ export class GamesService {
 
     if (!playerHand.includes(data.card)) {
       throw new BadRequestException("You don't have that card in your hand.");
+    }
+
+    if (!state.currentTurn.hasDrawnCards) {
+      throw new BadRequestException(
+        'You must draw cards before ending your turn.',
+      );
     }
 
     const card = await this.cardsService.getCardById(data.card);
@@ -321,6 +369,7 @@ export class GamesService {
     this.gameEngine = new GameEngine(state);
 
     await this.validatePlayerTurn(this.gameEngine.state, user.user_id);
+
     const params = {
       game_id,
       user_id: user.user_id,
@@ -333,6 +382,9 @@ export class GamesService {
         break;
       case 'placeCard':
         await this.handlePlaceCardAction(params, body);
+        break;
+      case 'endTurn':
+        await this.handleEndTurnAction(params);
         break;
     }
 
