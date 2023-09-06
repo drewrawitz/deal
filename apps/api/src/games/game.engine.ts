@@ -1,4 +1,4 @@
-import { Card } from '@deal/models';
+import { Cards, Properties } from '@deal/models';
 import {
   BankEvent,
   DealEvent,
@@ -12,15 +12,50 @@ import {
 
 export class GameEngine {
   private gameState: GameState;
-  private cardsData: Card[];
+  private cards = Cards;
+  private properties = Properties;
 
-  constructor(initialState: GameState, cards?: Card[]) {
+  constructor(initialState: GameState) {
     this.gameState = initialState;
-    this.cardsData = cards;
   }
 
   private getCardById(card_id: number) {
-    return this.cardsData.find((card) => card.id === card_id);
+    return this.cards.find((card) => card.id === card_id);
+  }
+
+  private getPropertyColor(card_id: number) {
+    const find = this.properties.find((property) =>
+      property.cards.includes(card_id),
+    );
+
+    return find?.color;
+  }
+
+  private calculateSets(player_id: string) {
+    const player = this.gameState.players[player_id];
+    const { board } = player;
+    const sets: Record<string, number[]> = {};
+
+    for (const property of this.properties) {
+      // Get all valid cards for a property (both specific and wildcards)
+      const validCards = [...property.cards, ...property.wildcards];
+
+      // Filter the player's properties to get cards of the current color
+      const playerCardsOfColor = board
+        .filter((prop) => validCards.includes(prop.card))
+        .map((prop) => prop.card);
+
+      if (playerCardsOfColor.length > 0) {
+        console.log({ playerCardsOfColor, cards: property.cards });
+      }
+
+      // Check if player has enough cards to form a set
+      if (playerCardsOfColor.length >= property.cards.length) {
+        sets[property.color] = playerCardsOfColor;
+      }
+    }
+
+    player.sets = sets;
   }
 
   // Event handlers
@@ -46,6 +81,8 @@ export class GameEngine {
         this.gameState.players[playerId] = {
           hand: cards,
           bank: [],
+          board: [],
+          sets: [],
         };
       }
     }
@@ -88,9 +125,19 @@ export class GameEngine {
       throw new Error(`Card ${event.data.card} not found`);
     }
 
-    if (card.type === 'property') {
-      console.log('PROP!!');
+    if (['property', 'wildcard'].includes(card.type)) {
+      const color = this.getPropertyColor(card.id) ?? event.data.color;
+
+      this.gameState.players[event.player_id].board.push({
+        color,
+        card: card.id,
+      });
     }
+
+    this.calculateSets(event.player_id);
+
+    // Increment the number of actions taken
+    this.gameState.currentTurn.actionsTaken++;
   }
 
   // Public method to apply an event

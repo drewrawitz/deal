@@ -44,6 +44,7 @@ export interface PlayEvent {
   player_id: string;
   data: {
     card: number;
+    color?: string;
   };
 }
 
@@ -65,6 +66,11 @@ type SpecificGameEvent =
 export type TypedGameEvent = Omit<GameEvents, "data" | "event_type"> &
   SpecificGameEvent;
 
+type GameProperties = {
+  color: string;
+  card: number;
+};
+
 export type GameState = {
   currentTurn: {
     player_id: string;
@@ -77,6 +83,8 @@ export type GameState = {
     {
       hand: number[];
       bank: number[];
+      board: GameProperties[];
+      sets: any;
     }
   >;
   deck: number[];

@@ -4,3 +4,5 @@ export * from "./entity/Card";
 export * from "./entity/Game";
 export * from "./entity/GamePlayers";
 export * from "./entity/GameEvents";
+export { default as Cards } from "./data/cards.json";
+export { default as Properties } from "./data/properties.json";

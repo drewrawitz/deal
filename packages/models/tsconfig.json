@@ -14,6 +14,8 @@
     "target": "es2017",
     "module": "commonjs",
     "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true,

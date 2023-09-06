@@ -21,6 +21,7 @@ const GameActionBodySchema = z.object({
         z.literal("board"),
         z.literal("discard"),
       ]),
+      color: z.string().optional(),
     })
     .optional(),
 });

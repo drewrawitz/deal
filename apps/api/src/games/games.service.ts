@@ -211,8 +211,7 @@ export class GamesService {
       discardPile: [],
     };
 
-    const cards = await this.cardsService.getCards();
-    const engine = new GameEngine(initialState, cards);
+    const engine = new GameEngine(initialState);
 
     // 2. Event Processing
     const events = await this.fetchGameEvents(game_id);
@@ -358,6 +357,9 @@ export class GamesService {
     if (data.placement === 'board') {
       await this.createAndSaveEvent(game_id, user_id, 'play', {
         card: card.id,
+        ...(data.color && {
+          color: data.color,
+        }),
       });
     }
   }
