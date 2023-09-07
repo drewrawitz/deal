@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GameActionBodyDto } from '@deal/dto';
 import { GameEngine } from './game.engine';
+import { GamesGateway } from './games.gateway';
 
 interface HandleActionParams {
   game_id: number;
@@ -28,6 +29,7 @@ export class GamesService {
     private readonly eventsRepo: Repository<GameEvents>,
     private cardsService: CardsService,
     private gameEngine: GameEngine,
+    private gamesGateway: GamesGateway,
   ) {}
 
   async getGames() {
@@ -44,7 +46,14 @@ export class GamesService {
       ],
     });
 
-    return await this.gameRepo.save(game);
+    const newGame = await this.gameRepo.save(game);
+
+    // Send a WS event to the client
+    this.gamesGateway.broadcastMessage('game.created', {
+      id: newGame.id,
+    });
+
+    return newGame;
   }
 
   async startGame(game_id: number) {

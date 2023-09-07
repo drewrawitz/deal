@@ -1,14 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import reactLogo from "./assets/react.svg";
+import { socket } from "./socket";
 import viteLogo from "/vite.svg";
-import { useGamesQuery } from "@deal/hooks";
+// import { useGamesQuery } from "@deal/hooks";
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
-  const { data: games } = useGamesQuery();
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [games, setGames] = useState<any>([]);
+  // const { data: games } = useGamesQuery();
 
   console.log({ games });
+
+  useEffect(() => {
+    function onConnect() {
+      setIsConnected(true);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    function onNewGame(value: any) {
+      console.log("NEW GAME!!", value);
+    }
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("game.created", onNewGame);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("game.created", onNewGame);
+    };
+  }, []);
+
+  console.log({ isConnected });
 
   return (
     <>
@@ -22,9 +50,6 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>

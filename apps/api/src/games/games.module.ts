@@ -5,6 +5,7 @@ import { CardsModule } from '../cards/cards.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Game, GameEvents, GamePlayers } from '@deal/models';
 import { GameEngine } from './game.engine';
+import { GamesGateway } from './games.gateway';
 
 @Module({
   imports: [
@@ -12,6 +13,6 @@ import { GameEngine } from './game.engine';
     CardsModule,
   ],
   controllers: [GamesController],
-  providers: [GamesService, GameEngine],
+  providers: [GamesService, GamesGateway, GameEngine],
 })
 export class GamesModule {}
