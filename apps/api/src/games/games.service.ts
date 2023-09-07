@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CardsService } from '../cards/cards.service';
 import { CurrentUser, GameState, TypedGameEvent } from '@deal/types';
-import { Game, GameStatus, GameEvents, GamePlayers, Card } from '@deal/models';
+import { Game, GameStatus, GameEvents, GamePlayers } from '@deal/models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GameActionBodyDto } from '@deal/dto';
@@ -68,7 +68,7 @@ export class GamesService {
     }
 
     // Shuffle the deck
-    const cards = await this.cardsService.getShuffledDeck();
+    const cards = this.cardsService.getShuffledDeck();
 
     // Run these DB events in a transaction
     return this.gameRepo.manager.transaction(
