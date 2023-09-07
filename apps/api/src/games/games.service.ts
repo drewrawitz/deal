@@ -30,6 +30,10 @@ export class GamesService {
     private gameEngine: GameEngine,
   ) {}
 
+  async getGames() {
+    return await this.gameRepo.find();
+  }
+
   async createGame(user: CurrentUser) {
     const game = this.gameRepo.create({
       players: [

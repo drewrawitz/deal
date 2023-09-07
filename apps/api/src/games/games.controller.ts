@@ -19,6 +19,11 @@ import { GameActionBodyDto, GameIdParamDto } from '@deal/dto';
 export class GamesController {
   constructor(private readonly gamesService: GamesService) {}
 
+  @Get()
+  async getGames() {
+    return this.gamesService.getGames();
+  }
+
   @UseGuards(AuthenticatedGuard)
   @Post()
   async createGame(@Request() req: RequestType) {
