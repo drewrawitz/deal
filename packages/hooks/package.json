@@ -16,11 +16,13 @@
   },
   "license": "ISC",
   "dependencies": {
+    "@deal/dto": "*",
     "@deal/sdk": "*",
     "@tanstack/react-query": "^4.33.0",
     "eslint-plugin-react": "^7.32.2"
   },
   "devDependencies": {
+    "@deal/types": "*",
     "@deal/eslint-config-custom": "*",
     "@deal/tsconfig": "*",
     "tsup": "^7.1.0",

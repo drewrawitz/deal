@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { socket } from "../socket";
-import { useGamesQuery } from "@deal/hooks";
+// import { useGamesQuery } from "@deal/hooks";
 
 function Home() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   //   const [games, setGames] = useState<any>([]);
-  const { data: games } = useGamesQuery();
+  // const { data: games } = useGamesQuery();
 
-  console.log({ games });
+  // console.log({ games });
 
   useEffect(() => {
     function onConnect() {

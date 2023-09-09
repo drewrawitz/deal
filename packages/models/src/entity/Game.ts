@@ -9,7 +9,10 @@ import {
 import { GamePlayers } from "./GamePlayers";
 import { GameEvents } from "./GameEvents";
 
-export enum GameStatus {
+// This has to be duplicated to avoid a cyclic dependency
+// This also lives in `@deal/types`.
+// Make sure these are in sync.
+enum GameStatus {
   WAITING = "waiting",
   IN_PROGRESS = "in_progress",
   ABANDONDED = "abandoned",

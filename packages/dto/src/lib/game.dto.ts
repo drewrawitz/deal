@@ -1,5 +1,6 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "nestjs-zod/z";
+import { GameStatus } from "@deal/types";
 
 export class GameIdParamDto extends createZodDto(
   z.object({
@@ -27,3 +28,9 @@ const GameActionBodySchema = z.object({
 });
 
 export class GameActionBodyDto extends createZodDto(GameActionBodySchema) {}
+
+const GetGamesSchema = z.object({
+  status: z.nativeEnum(GameStatus).optional(),
+});
+
+export class GetGamesDto extends createZodDto(GetGamesSchema) {}

@@ -226,6 +226,9 @@ importers:
         specifier: ^4.7.2
         version: 4.7.2
     devDependencies:
+      '@deal/types':
+        specifier: '*'
+        version: link:../../packages/types
       '@tailwindcss/forms':
         specifier: ^0.5.6
         version: 0.5.6(tailwindcss@3.3.3)
@@ -323,6 +326,9 @@ importers:
 
   packages/hooks:
     dependencies:
+      '@deal/dto':
+        specifier: '*'
+        version: link:../dto
       '@deal/sdk':
         specifier: '*'
         version: link:../sdk
@@ -339,6 +345,9 @@ importers:
       '@deal/tsconfig':
         specifier: '*'
         version: link:../tsconfig
+      '@deal/types':
+        specifier: '*'
+        version: link:../types
       tsup:
         specifier: ^7.1.0
         version: 7.1.0(typescript@5.0.4)
@@ -379,10 +388,16 @@ importers:
 
   packages/sdk:
     dependencies:
+      '@deal/dto':
+        specifier: '*'
+        version: link:../dto
       axios:
         specifier: ^1.4.0
         version: 1.4.0
     devDependencies:
+      '@deal/types':
+        specifier: '*'
+        version: link:../types
       typescript:
         specifier: ^5.0.2
         version: 5.1.6

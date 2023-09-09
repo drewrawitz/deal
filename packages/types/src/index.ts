@@ -1,4 +1,13 @@
-import { GameEvents } from "@deal/models";
+import { GameEvents, Game } from "@deal/models";
+
+export interface ListGamesResponse extends Game {}
+
+export enum GameStatus {
+  WAITING = "waiting",
+  IN_PROGRESS = "in_progress",
+  ABANDONDED = "abandoned",
+  FINISHED = "finished",
+}
 
 export interface CurrentUser {
   account_id: string;

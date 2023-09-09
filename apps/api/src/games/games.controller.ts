@@ -1,6 +1,7 @@
 import {
   Request,
   Controller,
+  Query,
   Param,
   Body,
   Get,
@@ -10,7 +11,7 @@ import {
 import { GamesService } from './games.service';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { Request as RequestType } from 'express';
-import { GameActionBodyDto, GameIdParamDto } from '@deal/dto';
+import { GameActionBodyDto, GameIdParamDto, GetGamesDto } from '@deal/dto';
 
 @Controller({
   path: 'games',
@@ -20,8 +21,8 @@ export class GamesController {
   constructor(private readonly gamesService: GamesService) {}
 
   @Get()
-  async getGames() {
-    return this.gamesService.getGames();
+  async getGames(@Query() query: GetGamesDto) {
+    return this.gamesService.getGames(query);
   }
 
   @UseGuards(AuthenticatedGuard)

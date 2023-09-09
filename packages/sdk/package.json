@@ -21,9 +21,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@deal/dto": "*",
     "axios": "^1.4.0"
   },
   "devDependencies": {
+    "@deal/types": "*",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
     "vite-plugin-dts": "^3.5.3"

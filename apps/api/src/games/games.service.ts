@@ -4,11 +4,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CardsService } from '../cards/cards.service';
-import { CurrentUser, GameState, TypedGameEvent } from '@deal/types';
-import { Game, GameStatus, GameEvents, GamePlayers } from '@deal/models';
+import {
+  CurrentUser,
+  GameStatus,
+  GameState,
+  TypedGameEvent,
+} from '@deal/types';
+import { Game, GameEvents, GamePlayers } from '@deal/models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { GameActionBodyDto } from '@deal/dto';
+import { GameActionBodyDto, GetGamesDto } from '@deal/dto';
 import { GameEngine } from './game.engine';
 import { GamesGateway } from './games.gateway';
 
@@ -32,8 +37,10 @@ export class GamesService {
     private gamesGateway: GamesGateway,
   ) {}
 
-  async getGames() {
-    return await this.gameRepo.find();
+  async getGames(query: GetGamesDto) {
+    return await this.gameRepo.find({
+      where: query.status ? { status: query.status } : {},
+    });
   }
 
   async createGame(user: CurrentUser) {

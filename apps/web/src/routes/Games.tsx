@@ -1,8 +1,16 @@
+import { useGamesQuery } from "@deal/hooks";
 import Layout from "../Layout";
 import Chat from "../components/Chat";
 import GamesTable from "../components/GamesTable";
+import { GameStatus } from "@deal/types";
 
 export default function Games() {
+  const { data: inProgressGames } = useGamesQuery({
+    status: GameStatus.IN_PROGRESS,
+  });
+
+  console.log({ inProgressGames });
+
   return (
     <Layout
       heading="Game Lobby"

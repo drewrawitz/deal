@@ -22,6 +22,7 @@
     "socket.io-client": "^4.7.2"
   },
   "devDependencies": {
+    "@deal/types": "*",
     "@tailwindcss/forms": "^0.5.6",
     "@types/node": "^20.5.9",
     "@types/react": "^18.2.15",
