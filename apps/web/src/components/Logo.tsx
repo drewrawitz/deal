@@ -3,33 +3,32 @@ export default function Logo() {
     <svg
       version="1.0"
       preserveAspectRatio="xMidYMid meet"
-      color-interpolation-filters="sRGB"
+      colorInterpolationFilters="sRGB"
       viewBox="83.12 73.45 172.25 103.1"
     >
       <g
-        data-v-6805eed4=""
         fill="currentColor"
         transform="translate(85.17660236358643,74.95000304310292)"
       >
         <path
-          fill-opacity="0"
+          fillOpacity="0"
           stroke="#EF5B24"
-          stroke-width="3"
+          strokeWidth="3"
           d="M 90.0999984741211 20.78598976135254 A 50.04999923706055 50.04999923706055 0 1 0 90.0999984741211 79.31400871276855"
         ></path>
         <g transform="translate(10,20.78598976135254)">
           <g>
             <rect
-              stroke-width="2"
+              strokeWidth="2"
               x="0"
               y="0"
               width="160.1999969482422"
               height="58.528018951416016"
-              fill-opacity="0"
+              fillOpacity="0"
             ></rect>
           </g>
           <g transform="translate(10,3)">
-            <g data-gra="path-name" fill-rule="">
+            <g>
               <g transform="scale(1)">
                 <g>
                   <path
@@ -42,7 +41,6 @@ export default function Logo() {
           </g>
         </g>
       </g>
-      <defs v-gra="od"></defs>
     </svg>
   );
 }

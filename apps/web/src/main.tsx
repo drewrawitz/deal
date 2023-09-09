@@ -7,13 +7,24 @@ import "./index.css";
 import Home from "./routes/Home";
 import Login from "./routes/Login";
 import ErrorPage from "./routes/Error";
+import Games from "./routes/Games";
+import App from "./App";
 
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Home />,
+    element: <App />,
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
+      {
+        path: "/games",
+        element: <Games />,
+      },
+    ],
     errorElement: <ErrorPage />,
   },
   {

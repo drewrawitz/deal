@@ -2,7 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+.body-bg {
   background-image: url("./assets/paper_3.png");
   background-size: 150px;
+}
+
+.chat {
+  @apply grid grid-cols-2 gap-x-3 py-2 px-4 text-sm;
+  &-image {
+    @apply self-start row-span-2;
+  }
+  &-header {
+    @apply text-sm row-start-1;
+  }
+  &-footer {
+    @apply text-sm row-start-3 opacity-50;
+  }
+  &-bubble {
+    @apply block w-fit px-4 py-2 relative bg-gray-200 rounded-2xl my-1;
+    max-width: 90%;
+  }
+  &-start {
+    @apply place-items-start;
+    grid-template-columns: auto 1fr;
+    .chat-header {
+      @apply col-start-2;
+    }
+    .chat-footer {
+      @apply col-start-2;
+    }
+    .chat-image {
+      @apply col-start-1;
+    }
+    .chat-bubble {
+      @apply col-start-2;
+    }
+  }
+  &-end {
+    @apply place-items-end;
+    grid-template-columns: 1fr auto;
+    .chat-header {
+      @apply col-start-1;
+    }
+    .chat-footer {
+      @apply col-start-1;
+    }
+    .chat-image {
+      @apply col-start-2;
+    }
+    .chat-bubble {
+      @apply col-start-1;
+    }
+  }
 }
