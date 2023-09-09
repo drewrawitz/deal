@@ -3,15 +3,29 @@ import Layout from "../Layout";
 import Chat from "../components/Chat";
 import GamesTable from "../components/GamesTable";
 import { GameStatus } from "@deal/types";
+import { socket } from "../socket";
+import { useEffect } from "react";
 
 export default function Games() {
   const { data: inProgressGames } = useGamesQuery({
     status: GameStatus.IN_PROGRESS,
   });
 
-  const { data: readyToJoinGames } = useGamesQuery({
+  const { data: readyToJoinGames, refetch: refetchWaiting } = useGamesQuery({
     status: GameStatus.WAITING,
   });
+
+  useEffect(() => {
+    function onNewGame() {
+      refetchWaiting();
+    }
+
+    socket.on("game.created", onNewGame);
+
+    return () => {
+      socket.off("game.created", onNewGame);
+    };
+  }, []);
 
   return (
     <Layout
