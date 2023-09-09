@@ -9,7 +9,9 @@ export default function Games() {
     status: GameStatus.IN_PROGRESS,
   });
 
-  console.log({ inProgressGames });
+  const { data: readyToJoinGames } = useGamesQuery({
+    status: GameStatus.WAITING,
+  });
 
   return (
     <Layout
@@ -26,60 +28,22 @@ export default function Games() {
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <div className="space-y-8">
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <GamesTable
-                heading="Waiting to join (2)"
-                data={[
-                  {
-                    id: 1,
-                    owner: {
-                      id: "123",
-                      username: "defekt7x",
-                    },
-                    status: "waiting",
-                  },
-                  {
-                    id: 2,
-                    owner: {
-                      id: "123",
-                      username: "kimmy1285",
-                    },
-                    status: "waiting",
-                  },
-                ]}
-              />
-            </div>
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <GamesTable
-                heading="In progress (3)"
-                data={[
-                  {
-                    id: 1,
-                    owner: {
-                      id: "123",
-                      username: "DASdealer",
-                    },
-                    status: "in_progress",
-                  },
-                  {
-                    id: 2,
-                    owner: {
-                      id: "123",
-                      username: "AlexisBWinning",
-                    },
-                    status: "in_progress",
-                  },
-                  {
-                    id: 3,
-                    owner: {
-                      id: "123",
-                      username: "knoX",
-                    },
-                    status: "in_progress",
-                  },
-                ]}
-              />
-            </div>
+            {readyToJoinGames && readyToJoinGames.count > 0 && (
+              <div className="bg-white shadow rounded-lg overflow-hidden">
+                <GamesTable
+                  status={GameStatus.WAITING}
+                  data={readyToJoinGames?.data ?? []}
+                />
+              </div>
+            )}
+            {inProgressGames && inProgressGames.count > 0 && (
+              <div className="bg-white shadow rounded-lg overflow-hidden">
+                <GamesTable
+                  status={GameStatus.IN_PROGRESS}
+                  data={inProgressGames?.data ?? []}
+                />
+              </div>
+            )}
           </div>
         </div>
 

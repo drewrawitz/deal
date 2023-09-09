@@ -16,6 +16,7 @@ import { Repository } from 'typeorm';
 import { GameActionBodyDto, GetGamesDto } from '@deal/dto';
 import { GameEngine } from './game.engine';
 import { GamesGateway } from './games.gateway';
+import { paginateResponse } from '@deal/utils-client';
 
 interface HandleActionParams {
   game_id: number;
@@ -38,13 +39,43 @@ export class GamesService {
   ) {}
 
   async getGames(query: GetGamesDto) {
-    return await this.gameRepo.find({
-      where: query.status ? { status: query.status } : {},
-    });
+    const { take, page } = query;
+    const skip = (page - 1) * take;
+
+    const qb = this.gameRepo
+      .createQueryBuilder('game')
+      .leftJoin('game.players', 'players')
+      .leftJoin('players.player', 'player')
+      .leftJoin('game.owner', 'owner')
+      .select([
+        'game.id',
+        'game.status',
+        'game.created_at',
+        'game.started_at',
+        'player.id',
+        'player.username',
+        'player.avatar',
+        'players.position',
+        'owner.id',
+        'owner.username',
+        'owner.avatar',
+      ])
+      .limit(take)
+      .offset(skip)
+      .orderBy('game.created_at', 'DESC');
+
+    if (query.status) {
+      qb.andWhere('game.status = :status', { status: query.status });
+    }
+
+    const [games, count] = await qb.getManyAndCount();
+
+    return paginateResponse(games, count, page, take);
   }
 
   async createGame(user: CurrentUser) {
     const game = this.gameRepo.create({
+      owner_id: user.user_id,
       players: [
         {
           player_id: user.user_id,

@@ -31,6 +31,8 @@ export class GameActionBodyDto extends createZodDto(GameActionBodySchema) {}
 
 const GetGamesSchema = z.object({
   status: z.nativeEnum(GameStatus).optional(),
+  take: z.coerce.number().min(1).optional().default(15),
+  page: z.coerce.number().min(1).optional().default(1),
 });
 
 export class GetGamesDto extends createZodDto(GetGamesSchema) {}

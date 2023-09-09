@@ -1,6 +1,33 @@
-import { GameEvents, Game } from "@deal/models";
+import { GameEvents, Game, GamePlayers, User } from "@deal/models";
 
-export interface ListGamesResponse extends Game {}
+export interface PaginatedResult<T> {
+  data: T;
+  count: number;
+  current_page: number;
+  next_page: number | null;
+  prev_page: number | null;
+  last_page: number;
+}
+
+export type ListGamesResponse = {
+  id: Game["id"];
+  status: Game["status"];
+  created_at: Game["created_at"];
+  started_at: Game["started_at"];
+  players: {
+    position: GamePlayers["position"];
+    player: {
+      id: User["id"];
+      username: User["id"];
+      avatar: User["avatar"];
+    };
+  }[];
+  owner: {
+    id: User["id"];
+    username: User["id"];
+    avatar: User["avatar"];
+  };
+};
 
 export enum GameStatus {
   WAITING = "waiting",

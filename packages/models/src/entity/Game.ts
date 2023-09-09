@@ -5,9 +5,12 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from "typeorm";
 import { GamePlayers } from "./GamePlayers";
 import { GameEvents } from "./GameEvents";
+import { User } from "./User";
 
 // This has to be duplicated to avoid a cyclic dependency
 // This also lives in `@deal/types`.
@@ -23,6 +26,15 @@ enum GameStatus {
 export class Game {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @ManyToOne(() => User, (user) => user.owned_games, {
+    onDelete: "SET NULL",
+  })
+  @JoinColumn({ name: "owner_id" })
+  owner: User;
+
+  @Column()
+  owner_id: string;
 
   @Index()
   @Column({
@@ -50,6 +62,4 @@ export class Game {
 
   @CreateDateColumn({ type: "timestamptz" })
   created_at: Date;
-
-  player_count?: number;
 }

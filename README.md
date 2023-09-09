@@ -2,6 +2,20 @@
 
 This is an official starter Turborepo.
 
+## Generating Migrations
+In the `models` package:
+
+```sh
+pnpm run typeorm migration:generate migration/name-of-migration -d data-source.ts
+```
+
+## Running a Migration
+In the `models` package:
+
+```sh
+pnpm run typeorm migration:run -d data-source.ts
+```
+
 ## Using this example
 
 Run the following command:

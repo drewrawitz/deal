@@ -2,7 +2,7 @@ import { Entity, Column, BeforeInsert, OneToMany } from "typeorm";
 import { generateEntityId } from "@deal/utils-client";
 import { SoftDeletableEntity } from "../interfaces/soft-deletable.entity";
 import { GamePlayers } from "./GamePlayers";
-import { GameEvents } from "./GameEvents";
+import { Game } from "./Game";
 
 @Entity()
 export class User extends SoftDeletableEntity {
@@ -16,6 +16,9 @@ export class User extends SoftDeletableEntity {
     cascade: ["remove"],
   })
   games: GamePlayers[];
+
+  @OneToMany(() => Game, (game) => game.owner)
+  owned_games: Game[];
 
   @Column({ type: "jsonb", nullable: true })
   metadata: Record<string, unknown>;

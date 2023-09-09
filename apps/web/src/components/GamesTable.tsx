@@ -1,23 +1,51 @@
-import { classNames, getAvatarUrl } from "@deal/utils-client";
+import { GameStatus, ListGamesResponse } from "@deal/types";
+import { classNames, getAvatarUrl, relativeDate } from "@deal/utils-client";
 import { Link } from "react-router-dom";
 
 interface GamesTableProps {
-  heading: string;
-  data: any;
+  status: GameStatus;
+  data: ListGamesResponse[];
 }
 
-const statuses: Record<string, string> = {
-  waiting: "Waiting",
-  in_progress: "In progress",
+interface GameTableContent {
+  heading: string;
+  status: string;
+  date: string;
+}
+
+const contentData: Record<GameStatus, GameTableContent> = {
+  waiting: {
+    heading: "Ready to join",
+    status: "Waiting",
+    date: "Created at",
+  },
+  in_progress: {
+    heading: "In Progress",
+    status: "In Progress",
+    date: "Started at",
+  },
+  abandoned: {
+    heading: "Abandoned",
+    status: "Abandoned",
+    date: "Ended at",
+  },
+  finished: {
+    heading: "Completed",
+    status: "Ended",
+    date: "Ended at",
+  },
 };
 
 export default function GamesTable(props: GamesTableProps) {
-  const { heading, data } = props;
+  const { status, data } = props;
+  const content = contentData[status];
 
   return (
     <div>
       <div className="p-4">
-        <h2 className="text-xl font-semibold leading-6 text-body">{heading}</h2>
+        <h2 className="text-xl font-semibold leading-6 text-body">
+          {content.heading}
+        </h2>
       </div>
       <div>
         <table className="text-body w-full">
@@ -26,12 +54,12 @@ export default function GamesTable(props: GamesTableProps) {
               <th className="py-2 px-6">Owner</th>
               <th className="py-2 px-6">Players</th>
               <th className="py-2 px-6">Status</th>
-              <th className="py-2 px-6">Created at</th>
+              <th className="py-2 px-6">{content.date}</th>
               <th className="py-2 px-6"></th>
             </tr>
           </thead>
           <tbody>
-            {data.map((game: any) => {
+            {data.map((game) => {
               return (
                 <tr className="border-b" key={game.id}>
                   <td className="px-6 py-4 font-medium text-gray-900 text-sm whitespace-nowrap w-[200px]">
@@ -45,7 +73,7 @@ export default function GamesTable(props: GamesTableProps) {
                     </div>
                   </td>
                   <td className="px-6 py-4 font-medium text-gray-900 text-sm whitespace-nowrap w-[100px]">
-                    1/4
+                    {game.players.length}
                   </td>
                   <td className="px-6 py-4 font-medium text-gray-900 text-sm whitespace-nowrap w-[100px]">
                     <div className="flex items-center space-x-2">
@@ -68,12 +96,12 @@ export default function GamesTable(props: GamesTableProps) {
                           game.status === "in_progress" ? "text-orange-500" : ""
                         )}
                       >
-                        {statuses[game.status]}
+                        {content.status}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-4 font-medium text-gray-900 text-sm whitespace-nowrap w-[150px]">
-                    2 minutes ago
+                    {relativeDate(game.started_at ?? game.created_at)}
                   </td>
                   <td className="px-6 py-4 font-medium text-gray-900 text-sm whitespace-nowrap w-[150px]">
                     {game.status === "in_progress" && (
