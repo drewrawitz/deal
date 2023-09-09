@@ -5,14 +5,14 @@ export default function CommentInput() {
         <form action="#" className="relative">
           <div className="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-body">
             <label htmlFor="comment" className="sr-only">
-              Add your comment
+              Message
             </label>
             <textarea
               rows={3}
               name="comment"
               id="comment"
               className="block w-full resize-none border-0 bg-transparent py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-              placeholder="Add your comment..."
+              placeholder="Write something here..."
               defaultValue={""}
             />
           </div>

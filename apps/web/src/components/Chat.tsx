@@ -40,7 +40,7 @@ export default function Chat() {
           </div>
         );
       })}
-      <div className="px-4 py-6">
+      <div>
         <CommentInput />
       </div>
     </>

@@ -7,8 +7,17 @@
   background-size: 150px;
 }
 
+.countdown {
+  & > * {
+    &:before {
+      text-align: center;
+      transition: all 1s cubic-bezier(1, 0, 0, 1);
+    }
+  }
+}
+
 .chat {
-  @apply grid grid-cols-2 gap-x-3 py-2 px-4 text-sm;
+  @apply grid grid-cols-2 gap-x-3 mb-6 text-sm;
   &-image {
     @apply self-start row-span-2;
   }

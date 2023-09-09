@@ -9,6 +9,7 @@ import Login from "./routes/Login";
 import ErrorPage from "./routes/Error";
 import Games from "./routes/Games";
 import App from "./App";
+import GameDetail from "./routes/GameDetail";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: "/games",
         element: <Games />,
+      },
+      {
+        path: "/games/:gameId",
+        element: <GameDetail />,
       },
     ],
     errorElement: <ErrorPage />,
