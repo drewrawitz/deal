@@ -26,7 +26,10 @@ async function bootstrap() {
   app.enableVersioning({
     type: VersioningType.URI,
   });
-  app.enableCors();
+  app.enableCors({
+    origin: [configService.get<string>('WEB_APP_URL')],
+    credentials: true,
+  });
 
   /**
    * Sessions

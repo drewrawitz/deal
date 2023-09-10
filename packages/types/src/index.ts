@@ -1,5 +1,10 @@
 import { GameEvents, Game, GamePlayers, User } from "@deal/models";
 
+export interface LoginParams {
+  email: string;
+  password: string;
+}
+
 export interface PaginatedResult<T> {
   data: T;
   count: number;

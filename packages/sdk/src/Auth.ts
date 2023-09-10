@@ -1,6 +1,8 @@
 import { CurrentUser } from "@deal/types";
 import axios from "axios";
 
+axios.defaults.withCredentials = true;
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default class Auth {
@@ -17,6 +19,12 @@ export default class Auth {
       email,
       password,
     });
+
+    return response.data;
+  }
+
+  static async logout() {
+    const response = await axios.post(`${this.baseURL}/logout`);
 
     return response.data;
   }

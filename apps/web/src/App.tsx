@@ -6,12 +6,6 @@ import { classNames, getAvatarUrl } from "@deal/utils-client";
 import Logo from "./components/Logo";
 import { useAuthQuery } from "@deal/hooks";
 
-const user = {
-  name: "Tom Cook",
-  email: "tom@example.com",
-  imageUrl: getAvatarUrl("defekt7x"),
-};
-
 const userNavigation = [
   { name: "Your Profile", href: "#" },
   { name: "Settings", href: "#" },

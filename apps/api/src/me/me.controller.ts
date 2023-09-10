@@ -1,6 +1,5 @@
-import { Request, Controller, Get, UseGuards } from '@nestjs/common';
+import { Request, Controller, Get } from '@nestjs/common';
 import { MeService } from './me.service';
-import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { Request as RequestType } from 'express';
 
 @Controller({
@@ -10,7 +9,6 @@ import { Request as RequestType } from 'express';
 export class MeController {
   constructor(private readonly meService: MeService) {}
 
-  @UseGuards(AuthenticatedGuard)
   @Get()
   async getCurrentUser(@Request() req: RequestType) {
     return req.user;

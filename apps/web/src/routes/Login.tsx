@@ -1,7 +1,36 @@
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useAuthMutations } from "@deal/hooks";
 import Logo from "../components/Logo";
 import { Link } from "react-router-dom";
+import { LoginParams } from "@deal/types";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState<LoginParams>({
+    email: "",
+    password: "",
+  });
+
+  const { loginMutation } = useAuthMutations();
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { email, password } = formData;
+
+    try {
+      await loginMutation.mutateAsync({ email, password });
+      navigate("/games");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -17,7 +46,7 @@ export default function Login() {
 
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-[480px]">
         <div className="bg-white px-6 py-8 shadow rounded-lg sm:px-12">
-          <form className="space-y-6" action="#" method="POST">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label
                 htmlFor="email"
@@ -30,6 +59,8 @@ export default function Login() {
                   id="email"
                   name="email"
                   type="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
                   autoComplete="email"
                   required
                   className="block w-full rounded-md border-0 py-1.5 text-body shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-orange sm:text-sm sm:leading-6"
@@ -49,6 +80,8 @@ export default function Login() {
                   id="password"
                   name="password"
                   type="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
                   autoComplete="current-password"
                   required
                   className="block w-full rounded-md border-0 py-1.5 text-body shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-orange sm:text-sm sm:leading-6"
