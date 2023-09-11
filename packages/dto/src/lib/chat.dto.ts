@@ -13,6 +13,7 @@ export class CreateChatMessageDto extends createZodDto(
 const GetChatMessagesSchema = z.object({
   take: z.coerce.number().min(1).optional().default(15),
   page: z.coerce.number().min(1).optional().default(1),
+  game_id: z.number().optional(),
 });
 
 export class GetChatMessagesDto extends createZodDto(GetChatMessagesSchema) {}
