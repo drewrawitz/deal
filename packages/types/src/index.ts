@@ -1,8 +1,14 @@
-import { GameEvents, Game, GamePlayers, User } from "@deal/models";
+import { GameEvents, Game, GamePlayers, User, Message } from "@deal/models";
 
 export interface LoginParams {
   email: string;
   password: string;
+}
+
+interface UserFields {
+  id: User["id"];
+  username: User["id"];
+  avatar: User["avatar"];
 }
 
 export interface PaginatedResult<T> {
@@ -14,6 +20,12 @@ export interface PaginatedResult<T> {
   last_page: number;
 }
 
+export type ListChatMessagesResponse = {
+  content: Message["content"];
+  created_at: Message["created_at"];
+  user: UserFields;
+};
+
 export type ListGamesResponse = {
   id: Game["id"];
   status: Game["status"];
@@ -21,17 +33,9 @@ export type ListGamesResponse = {
   started_at: Game["started_at"];
   players: {
     position: GamePlayers["position"];
-    player: {
-      id: User["id"];
-      username: User["id"];
-      avatar: User["avatar"];
-    };
+    player: UserFields;
   }[];
-  owner: {
-    id: User["id"];
-    username: User["id"];
-    avatar: User["avatar"];
-  };
+  owner: UserFields;
 };
 
 export enum GameStatus {

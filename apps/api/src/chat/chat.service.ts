@@ -23,7 +23,13 @@ export class ChatService {
       .createQueryBuilder('message')
       .leftJoin('message.user', 'user')
       .leftJoin('message.game', 'game')
-      .select(['user.id', 'user.username', 'user.avatar', 'message.content'])
+      .select([
+        'user.id',
+        'user.username',
+        'user.avatar',
+        'message.content',
+        'message.created_at',
+      ])
       .limit(take)
       .offset(skip)
       .orderBy('message.created_at', 'DESC');
@@ -47,9 +53,12 @@ export class ChatService {
     const newMessage = await this.messageRepo.save(message);
 
     // Send a WS event to the client
-    this.gamesGateway.broadcastMessage('message.created', {
-      id: newMessage.id,
-    });
+    this.gamesGateway.broadcastMessage(
+      !body.game_id ? 'message.created' : `game.${body.game_id}.chat`,
+      {
+        id: newMessage.id,
+      },
+    );
 
     return newMessage;
   }
