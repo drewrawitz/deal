@@ -15,6 +15,7 @@ import { AuthModule } from './auth/auth.module';
 import { MeModule } from './me/me.module';
 import { GamesModule } from './games/games.module';
 import { CardsModule } from './cards/cards.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   providers: [
@@ -35,6 +36,7 @@ import { CardsModule } from './cards/cards.module';
     MeModule,
     CardsModule,
     GamesModule,
+    ChatModule,
   ],
 })
 export class AppModule {}
