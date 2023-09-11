@@ -3,6 +3,7 @@ import { generateEntityId } from "@deal/utils-client";
 import { SoftDeletableEntity } from "../interfaces/soft-deletable.entity";
 import { GamePlayers } from "./GamePlayers";
 import { Game } from "./Game";
+import { Message } from "./Message";
 
 @Entity()
 export class User extends SoftDeletableEntity {
@@ -19,6 +20,9 @@ export class User extends SoftDeletableEntity {
 
   @OneToMany(() => Game, (game) => game.owner)
   owned_games: Game[];
+
+  @OneToMany(() => Message, (message) => message.user)
+  messages: Message[];
 
   @Column({ type: "jsonb", nullable: true })
   metadata: Record<string, unknown>;

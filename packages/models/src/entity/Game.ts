@@ -11,6 +11,7 @@ import {
 import { GamePlayers } from "./GamePlayers";
 import { GameEvents } from "./GameEvents";
 import { User } from "./User";
+import { Message } from "./Message";
 
 // This has to be duplicated to avoid a cyclic dependency
 // This also lives in `@deal/types`.
@@ -53,6 +54,9 @@ export class Game {
     cascade: ["remove"],
   })
   events: GameEvents[];
+
+  @OneToMany(() => Message, (message) => message.game)
+  messages: Message[];
 
   @Column({ type: "timestamptz", nullable: true })
   started_at: Date | null;
