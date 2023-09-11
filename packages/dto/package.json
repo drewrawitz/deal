@@ -17,13 +17,13 @@
   },
   "license": "ISC",
   "dependencies": {
+    "@deal/types": "*",
     "eslint-plugin-react": "^7.32.2",
     "nestjs-zod": "^2.3.3",
     "zod": "^3.21.4"
   },
   "devDependencies": {
     "@deal/models": "*",
-    "@deal/types": "*",
     "@deal/eslint-config-custom": "*",
     "@deal/tsconfig": "*",
     "tsup": "^7.1.0",

@@ -1,4 +1,16 @@
+import { useAuthQuery } from "@deal/hooks";
+
 export default function CommentInput() {
+  const { data: currentUser } = useAuthQuery();
+
+  if (!currentUser) {
+    return (
+      <p className="text-center font-medium text-sm border-t pt-4">
+        You must be logged in to post in the chat.
+      </p>
+    );
+  }
+
   return (
     <div className="flex items-start space-x-4">
       <div className="min-w-0 flex-1">

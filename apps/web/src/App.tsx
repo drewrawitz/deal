@@ -1,22 +1,24 @@
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { IconMenu2, IconX, IconBell } from "@tabler/icons-react";
-import { useLocation, Link, Outlet } from "react-router-dom";
+import { useLocation, useNavigate, Link, Outlet } from "react-router-dom";
 import { classNames, getAvatarUrl } from "@deal/utils-client";
 import Logo from "./components/Logo";
-import { useAuthQuery } from "@deal/hooks";
-
-const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
-];
+import { useAuthMutations, useAuthQuery } from "@deal/hooks";
 
 const guestNavigation = [{ name: "Sign in", href: "/login" }];
 
 export default function Layout() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const { data: currentUser } = useAuthQuery();
+  const { logoutMutation } = useAuthMutations();
+
+  const onClickLogout = () => {
+    logoutMutation.mutate();
+    navigate("/login");
+  };
+
   const navigation = [
     { name: "Lobby", href: "/", current: pathname === "/" },
     { name: "Games", href: "/games", current: pathname === "/games" },
@@ -25,6 +27,12 @@ export default function Layout() {
     { name: "Leaderboard", href: "/games", current: false },
     { name: "Help", href: "/games", current: false },
   ];
+  const userNavigation = [
+    { name: "Your Profile", href: "#" },
+    { name: "Settings", href: "#" },
+    { name: "Sign out", onClick: onClickLogout },
+  ];
+
   return (
     <>
       <div className="min-h-full">
@@ -107,15 +115,26 @@ export default function Layout() {
                                   {userNavigation.map((item) => (
                                     <Menu.Item key={item.name}>
                                       {({ active }) => (
-                                        <Link
-                                          to={item.href}
-                                          className={classNames(
-                                            active ? "bg-gray-100" : "",
-                                            "block px-4 py-2 text-sm text-gray-700"
+                                        <>
+                                          {item.href ? (
+                                            <Link
+                                              to={item.href}
+                                              className={classNames(
+                                                active ? "bg-gray-100" : "",
+                                                "block px-4 py-2 text-sm text-gray-700"
+                                              )}
+                                            >
+                                              {item.name}
+                                            </Link>
+                                          ) : (
+                                            <button
+                                              onClick={item.onClick}
+                                              className="block w-full text-left px-4 py-2 text-sm text-gray-700"
+                                            >
+                                              {item.name}
+                                            </button>
                                           )}
-                                        >
-                                          {item.name}
-                                        </Link>
+                                        </>
                                       )}
                                     </Menu.Item>
                                   ))}

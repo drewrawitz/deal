@@ -29,7 +29,7 @@ export class AuthController {
     return req.user;
   }
 
-  @Get('/logout')
+  @Post('/logout')
   logout(@Request() req: RequestType) {
     req.session.destroy(() => {
       return;
