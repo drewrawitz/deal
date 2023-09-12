@@ -5,6 +5,7 @@ import GamesTable from "../components/GamesTable";
 import { GameStatus } from "@deal/types";
 import { socket } from "../socket";
 import { useEffect } from "react";
+import OnlineUsers from "../components/OnlineUsers";
 
 export default function Games() {
   const { data: inProgressGames } = useGamesQuery({
@@ -73,7 +74,8 @@ export default function Games() {
                   <div className="flex-none rounded-full p-1 text-green-500 bg-green-500/20">
                     <div className="h-1.5 w-1.5 rounded-full bg-current" />
                   </div>
-                  <span className="text-green-600 font-medium">32 online</span>
+                  {/* <span className="text-green-600 font-medium">32 online</span> */}
+                  <OnlineUsers />
                 </div>
               </div>
               <div className="px-6 py-4">
