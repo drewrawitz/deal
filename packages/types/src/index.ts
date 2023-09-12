@@ -1,5 +1,7 @@
 import { GameEvents, Game, GamePlayers, User, Message } from "@deal/models";
 
+export interface CreateMessageReturn extends Message {}
+
 export interface LoginParams {
   email: string;
   password: string;

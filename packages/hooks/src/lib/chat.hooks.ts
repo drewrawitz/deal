@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Api from "@deal/sdk";
-import { GetChatMessagesDto } from "@deal/dto";
+import { CreateChatMessageDto, GetChatMessagesDto } from "@deal/dto";
 import { paginatedPlaceholder } from "../shared/helpers";
 
 const getChatMessages = async (opts: GetChatMessagesDto) => {
@@ -15,4 +15,14 @@ export function useChatMessagesQuery(opts: GetChatMessagesDto) {
     keepPreviousData: true,
     placeholderData: paginatedPlaceholder,
   });
+}
+
+export function useChatMutations() {
+  const createChatMutation = useMutation((body: CreateChatMessageDto) =>
+    Api.Chat.create(body)
+  );
+
+  return {
+    createChatMutation,
+  };
 }

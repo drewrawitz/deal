@@ -1,7 +1,22 @@
-import { useAuthQuery } from "@deal/hooks";
+import { useState } from "react";
+import { useAuthQuery, useChatMutations } from "@deal/hooks";
 
 export default function CommentInput() {
+  const [message, setMessage] = useState("");
   const { data: currentUser } = useAuthQuery();
+  const { createChatMutation } = useChatMutations();
+
+  const onSubmit = async (e: React.FormEvent) => {
+    createChatMutation
+      .mutateAsync({
+        content: message,
+      })
+      .then(() => {
+        setMessage("");
+      });
+
+    e.preventDefault();
+  };
 
   if (!currentUser) {
     return (
@@ -14,7 +29,7 @@ export default function CommentInput() {
   return (
     <div className="flex items-start space-x-4">
       <div className="min-w-0 flex-1">
-        <form action="#" className="relative">
+        <form onSubmit={onSubmit} className="relative">
           <div className="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-body">
             <label htmlFor="comment" className="sr-only">
               Message
@@ -23,9 +38,10 @@ export default function CommentInput() {
               rows={3}
               name="comment"
               id="comment"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               className="block w-full resize-none border-0 bg-transparent py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
               placeholder="Write something here..."
-              defaultValue={""}
             />
           </div>
           <div className="text-right mt-4">

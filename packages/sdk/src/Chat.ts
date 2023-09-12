@@ -1,6 +1,10 @@
 import axios from "axios";
-import { GetChatMessagesDto } from "@deal/dto";
-import type { PaginatedResult, ListChatMessagesResponse } from "@deal/types";
+import { CreateChatMessageDto, GetChatMessagesDto } from "@deal/dto";
+import type {
+  PaginatedResult,
+  ListChatMessagesResponse,
+  CreateMessageReturn,
+} from "@deal/types";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -14,6 +18,16 @@ export default class Chat {
       params: {
         ...options,
       },
+    });
+
+    return response.data;
+  }
+
+  static async create(
+    options: CreateChatMessageDto
+  ): Promise<CreateMessageReturn> {
+    const response = await axios.post(this.baseURL, {
+      ...options,
     });
 
     return response.data;
