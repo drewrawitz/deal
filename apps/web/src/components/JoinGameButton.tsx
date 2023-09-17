@@ -1,7 +1,7 @@
-import { useAuthQuery } from "@deal/hooks";
+import { useAuthQuery, useGamesMutations } from "@deal/hooks";
 import { ListGamesResponse } from "@deal/types";
-import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 interface JoinGameButtonProps {
   game: ListGamesResponse;
@@ -10,6 +10,9 @@ interface JoinGameButtonProps {
 export default function JoinGameButton(props: JoinGameButtonProps) {
   const { game } = props;
   const { data: currentUser } = useAuthQuery();
+  const { joinGameMutation } = useGamesMutations();
+  const navigate = useNavigate();
+  const [isJoiningGame, setIsJoiningGame] = useState(false);
 
   const isUserInGame = useMemo(() => {
     if (!currentUser) {
@@ -19,30 +22,42 @@ export default function JoinGameButton(props: JoinGameButtonProps) {
     return game.players.some((p) => p.player.id === currentUser.user_id);
   }, [currentUser, game]);
 
-  const onClickJoinGame = () => {
-    console.log("join game");
+  const onClickJoinGame = async () => {
+    try {
+      setIsJoiningGame(true);
+      await joinGameMutation.mutateAsync({
+        game_id: game.id,
+      });
+
+      navigate(`/games/${game.id}`);
+    } catch (err) {
+      console.error("Something went wrong", err);
+    } finally {
+      setIsJoiningGame(false);
+    }
   };
 
-  if (isUserInGame) {
-    return (
-      <Link to={`/games/${game.id}`}>
-        <button
-          type="button"
-          className="rounded-md bg-orange hover:bg-orange/80 px-4 py-2 text-sm font-semibold text-white border-none"
-        >
-          Go to Game
-        </button>
-      </Link>
-    );
-  }
+  //   if (isUserInGame) {
+  //     return (
+  //       <Link to={`/games/${game.id}`}>
+  //         <button
+  //           type="button"
+  //           className="rounded-md bg-orange hover:bg-orange/80 px-4 py-2 text-sm font-semibold text-white border-none"
+  //         >
+  //           Go to Game
+  //         </button>
+  //       </Link>
+  //     );
+  //   }
 
   return (
     <button
       type="button"
       onClick={onClickJoinGame}
-      className="rounded-md bg-orange hover:bg-orange/80 px-4 py-2 text-sm font-semibold text-white border-none"
+      disabled={isJoiningGame}
+      className="rounded-md bg-orange hover:bg-orange/80 px-4 py-2 text-sm font-semibold text-white border-none disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      Join Game
+      {isJoiningGame ? "Joining..." : "Join Game"}
     </button>
   );
 }

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Api from "@deal/sdk";
 import { GetGamesDto } from "@deal/dto";
 import { paginatedPlaceholder } from "../shared/helpers";
@@ -18,4 +18,21 @@ export function useGamesQuery(opts: GetGamesDto) {
     keepPreviousData: true,
     placeholderData: paginatedPlaceholder,
   });
+}
+
+export function useGamesMutations() {
+  const queryClient = useQueryClient();
+
+  const joinGameMutation = useMutation(
+    ({ game_id }: { game_id: number }) => Api.Games.join(game_id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["games"]);
+      },
+    }
+  );
+
+  return {
+    joinGameMutation,
+  };
 }

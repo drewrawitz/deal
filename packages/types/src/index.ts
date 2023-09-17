@@ -22,6 +22,8 @@ export interface PaginatedResult<T> {
   last_page: number;
 }
 
+export interface JoinGameResponse extends GamePlayers {}
+
 export type ListChatMessagesResponse = {
   content: Message["content"];
   created_at: Message["created_at"];
