@@ -1,10 +1,11 @@
 interface SectionProps {
   children: React.ReactNode;
+  slot?: React.ReactNode;
   heading: string;
 }
 
 export default function Section(props: SectionProps) {
-  const { children, heading } = props;
+  const { children, heading, slot } = props;
 
   return (
     <section>
@@ -13,6 +14,7 @@ export default function Section(props: SectionProps) {
           <h2 className="text-xl font-semibold leading-6 text-body">
             {heading}
           </h2>
+          {slot && slot}
         </div>
         <div className="px-6 py-4">{children}</div>
       </div>

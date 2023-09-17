@@ -255,7 +255,51 @@ export class GamesService {
       position: newPosition,
     });
 
-    return await this.gamePlayersRepo.save(gamePlayer);
+    const players = await this.gamePlayersRepo.save(gamePlayer);
+
+    // Send a WS event to the client
+    this.gamesGateway.broadcastMessage(`game.${game_id}.players.join`, {
+      players,
+    });
+
+    return players;
+  }
+
+  async leaveGame(user: CurrentUser, game_id: number) {
+    const game = await this.gameRepo
+      .createQueryBuilder('game')
+      .leftJoinAndSelect('game.players', 'players')
+      .where('game.id = :id', { id: game_id })
+      .getOne();
+
+    // Make sure this Game exists
+    if (!game) {
+      throw new NotFoundException();
+    }
+
+    // Make sure the Game has not already started
+    if (game.status !== 'waiting') {
+      throw new BadRequestException('Game has already started');
+    }
+
+    // Check to make sure this player has joined the game
+    const playerIds = game.players.map((p) => p.player_id);
+    if (!playerIds.includes(user.user_id)) {
+      throw new BadRequestException('You have not joined this game.');
+    }
+
+    // All looks valid. Remove the player from the game
+    await this.gamePlayersRepo.delete({
+      game_id,
+      player_id: user.user_id,
+    });
+
+    // Send a WS event to the client
+    this.gamesGateway.broadcastMessage(`game.${game_id}.players.leave`, null);
+
+    return {
+      success: true,
+    };
   }
 
   async fetchGameEvents(game_id: number): Promise<TypedGameEvent[]> {

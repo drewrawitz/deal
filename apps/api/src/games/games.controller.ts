@@ -49,6 +49,15 @@ export class GamesController {
   }
 
   @UseGuards(AuthenticatedGuard)
+  @Post('/:game_id/leave')
+  async leaveGame(
+    @Request() req: RequestType,
+    @Param() params: GameIdParamDto,
+  ) {
+    return this.gamesService.leaveGame(req.user, params.game_id);
+  }
+
+  @UseGuards(AuthenticatedGuard)
   @Post('/:game_id/action')
   async gameAction(
     @Request() req: RequestType,

@@ -1,5 +1,11 @@
 import { GameEvents, Game, GamePlayers, User, Message } from "@deal/models";
 
+export enum SoundTriggers {
+  ENTER_ROOM = "ENTER_ROOM",
+  LEAVE_ROOM = "LEAVE_ROOM",
+  START_GAME = "START_GAME",
+}
+
 export interface CreateMessageReturn extends Message {}
 
 export interface LoginParams {

@@ -41,7 +41,17 @@ export function useGamesMutations() {
     }
   );
 
+  const leaveGameMutation = useMutation(
+    ({ game_id }: { game_id: number }) => Api.Games.leave(game_id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["games"]);
+      },
+    }
+  );
+
   return {
     joinGameMutation,
+    leaveGameMutation,
   };
 }

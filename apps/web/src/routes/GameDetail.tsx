@@ -5,6 +5,12 @@ import Chat from "../components/Chat";
 import Section from "../components/Section";
 import { useParams } from "react-router-dom";
 import { useGameQuery } from "@deal/hooks";
+import { useEffect, useState } from "react";
+import { socket } from "../socket";
+import AudioPlayer from "../components/AudioPlayer";
+import { SoundTriggers } from "@deal/types";
+import { soundFileMapping } from "../utils/config";
+import JoinGameButton from "../components/JoinGameButton";
 
 function NotFound() {
   return (
@@ -70,7 +76,39 @@ const players = [
 
 export default function GameDetail() {
   const { gameId } = useParams();
-  const { data, isInitialLoading, isError } = useGameQuery(Number(gameId));
+  const [currentSound, setCurrentSound] = useState<SoundTriggers | null>(null);
+  const { data, refetch, isInitialLoading, isError } = useGameQuery(
+    Number(gameId)
+  );
+  const canStartGame = data?.players?.length && data.players.length > 1;
+
+  const playSound = (sound: SoundTriggers) => {
+    setCurrentSound(sound);
+    setTimeout(() => setCurrentSound(null), 1000);
+  };
+
+  useEffect(() => {
+    const channel_join = `game.${gameId}.players.join`;
+    const channel_leave = `game.${gameId}.players.leave`;
+
+    function onPlayersJoin() {
+      playSound(SoundTriggers.ENTER_ROOM);
+      refetch();
+    }
+
+    function onPlayersLeave() {
+      playSound(SoundTriggers.LEAVE_ROOM);
+      refetch();
+    }
+
+    socket.on(channel_join, onPlayersJoin);
+    socket.on(channel_leave, onPlayersLeave);
+
+    return () => {
+      socket.off(channel_join, onPlayersJoin);
+      socket.off(channel_leave, onPlayersLeave);
+    };
+  }, []);
 
   if (isError) {
     return (
@@ -89,15 +127,32 @@ export default function GameDetail() {
       <Layout
         heading={`Game #${gameId}`}
         slot={
-          <div className="font-mono rounded-md bg-blue-400 px-2 py-0.5 text-white">
-            Waiting for players
+          <div className="space-y-4 text-right">
+            {canStartGame ? (
+              <div className="font-mono rounded-md bg-green-600 px-2 py-0.5 text-white">
+                Ready to start
+              </div>
+            ) : (
+              <div className="font-mono rounded-md bg-blue-400 px-2 py-0.5 text-white">
+                Waiting for players
+              </div>
+            )}
           </div>
         }
       >
+        {currentSound && (
+          <AudioPlayer
+            soundFile={soundFileMapping[currentSound]}
+            play={Boolean(currentSound)}
+          />
+        )}
         <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
           <div className="grid grid-cols-1 gap-4 lg:col-span-2">
             <div className="space-y-8">
-              <Section heading="Game Lobby">
+              <Section
+                heading="Game Lobby"
+                slot={<JoinGameButton game={data} />}
+              >
                 <div className="grid grid-cols-5">
                   {Array.from({ length: 5 }, (_, i) => (
                     <div key={i} className="py-4">
