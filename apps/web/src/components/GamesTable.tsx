@@ -1,6 +1,7 @@
 import { GameStatus, ListGamesResponse } from "@deal/types";
 import { classNames, getAvatarUrl, relativeDate } from "@deal/utils-client";
 import { Link } from "react-router-dom";
+import JoinGameButton from "./JoinGameButton";
 
 interface GamesTableProps {
   status: GameStatus;
@@ -115,14 +116,7 @@ export default function GamesTable(props: GamesTableProps) {
                       </Link>
                     )}
                     {game.status === "waiting" && (
-                      <Link to="/games/123">
-                        <button
-                          type="button"
-                          className="rounded-md bg-orange hover:bg-orange/80 px-4 py-2 text-sm font-semibold text-white border-none"
-                        >
-                          Join Game
-                        </button>
-                      </Link>
+                      <JoinGameButton game={game} />
                     )}
                   </td>
                 </tr>
