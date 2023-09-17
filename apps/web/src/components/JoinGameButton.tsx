@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import { useAuthQuery, useGamesMutations } from "@deal/hooks";
 import { ListGamesResponse } from "@deal/types";
 import { useMemo, useState } from "react";
@@ -30,25 +31,26 @@ export default function JoinGameButton(props: JoinGameButtonProps) {
       });
 
       navigate(`/games/${game.id}`);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Something went wrong", err);
+      toast.error(err?.response?.data?.message ?? "Something went wrong");
     } finally {
       setIsJoiningGame(false);
     }
   };
 
-  //   if (isUserInGame) {
-  //     return (
-  //       <Link to={`/games/${game.id}`}>
-  //         <button
-  //           type="button"
-  //           className="rounded-md bg-orange hover:bg-orange/80 px-4 py-2 text-sm font-semibold text-white border-none"
-  //         >
-  //           Go to Game
-  //         </button>
-  //       </Link>
-  //     );
-  //   }
+  if (isUserInGame) {
+    return (
+      <Link to={`/games/${game.id}`}>
+        <button
+          type="button"
+          className="rounded-md bg-orange hover:bg-orange/80 px-4 py-2 text-sm font-semibold text-white border-none"
+        >
+          Go to Game
+        </button>
+      </Link>
+    );
+  }
 
   return (
     <button
