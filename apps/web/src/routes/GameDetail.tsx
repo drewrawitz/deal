@@ -157,38 +157,44 @@ export default function GameDetail() {
                 slot={<JoinGameButton game={data} />}
               >
                 <div className="grid grid-cols-5">
-                  {Array.from({ length: 5 }, (_, i) => (
-                    <div key={i} className="py-4">
-                      <h4 className="text-lg font-semibold mb-2">
-                        Seat {i + 1}
-                      </h4>
+                  {Array.from({ length: 5 }, (_, i) => {
+                    const findPlayer = data?.players?.find(
+                      (p) => p.position === i + 1
+                    );
 
-                      {data?.players?.[i] ? (
-                        <div>
-                          <img
-                            src={getAvatarUrl(data.players[i].player.username)}
-                            alt={data.players[i].player.username}
-                            className="h-8 w-8 rounded-full bg-gray-300"
-                          />
-                          <div className="truncate text-sm mt-1">
-                            {data.players[i].player.username}
-                          </div>
-                          {data.players[i].player.id === data.owner.id ? (
-                            <span className="text-xs bg-blue-800 text-white py-1 px-2 rounded-md">
-                              Owner
-                            </span>
-                          ) : isOwner ? (
-                            <KickPlayerButton
-                              game={data}
-                              player={data.players[i].player}
+                    return (
+                      <div key={i} className="py-4">
+                        <h4 className="text-lg font-semibold mb-2">
+                          Seat {i + 1}
+                        </h4>
+
+                        {findPlayer ? (
+                          <div>
+                            <img
+                              src={getAvatarUrl(findPlayer.player.username)}
+                              alt={findPlayer.player.username}
+                              className="h-8 w-8 rounded-full bg-gray-300"
                             />
-                          ) : null}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500">Empty</p>
-                      )}
-                    </div>
-                  ))}
+                            <div className="truncate text-sm mt-1">
+                              {findPlayer.player.username}
+                            </div>
+                            {findPlayer.player.id === data.owner.id ? (
+                              <span className="text-xs bg-blue-800 text-white py-1 px-2 rounded-md">
+                                Owner
+                              </span>
+                            ) : isOwner ? (
+                              <KickPlayerButton
+                                game={data}
+                                player={findPlayer.player}
+                              />
+                            ) : null}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-500">Empty</p>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </Section>
             </div>

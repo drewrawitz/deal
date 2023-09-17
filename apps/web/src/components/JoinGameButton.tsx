@@ -36,6 +36,7 @@ export default function JoinGameButton(props: JoinGameButtonProps) {
       setActionStatus("joining");
       await joinGameMutation.mutateAsync({ game_id: game.id });
       navigate(`/games/${game.id}`);
+      toast.success("You have joined the game!");
     } catch (err) {
       handleError(err);
     } finally {
