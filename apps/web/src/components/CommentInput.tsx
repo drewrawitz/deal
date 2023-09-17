@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { useAuthQuery, useChatMutations } from "@deal/hooks";
 
-export default function CommentInput() {
+interface CommentInputProps {
+  gameId?: number;
+}
+
+export default function CommentInput(props: CommentInputProps) {
+  const { gameId } = props;
   const [message, setMessage] = useState("");
   const { data: currentUser } = useAuthQuery();
   const { createChatMutation } = useChatMutations();
@@ -10,6 +15,9 @@ export default function CommentInput() {
     createChatMutation
       .mutateAsync({
         content: message,
+        ...(gameId && {
+          game_id: gameId,
+        }),
       })
       .then(() => {
         setMessage("");

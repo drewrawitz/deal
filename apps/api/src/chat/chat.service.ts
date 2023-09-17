@@ -36,6 +36,8 @@ export class ChatService {
 
     if (query.game_id) {
       qb.andWhere('game.id = :game_id', { game_id });
+    } else {
+      qb.andWhere('game.id is null');
     }
 
     const [messages, count] = await qb.getManyAndCount();

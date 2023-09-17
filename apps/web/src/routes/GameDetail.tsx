@@ -3,9 +3,8 @@ import Layout from "../Layout";
 import Activity from "../components/Activity";
 import Chat from "../components/Chat";
 import Section from "../components/Section";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useGameQuery } from "@deal/hooks";
-import LoadingSpinner from "../components/LoadingSpinner";
 
 function NotFound() {
   return (
@@ -71,7 +70,6 @@ const players = [
 
 export default function GameDetail() {
   const { gameId } = useParams();
-  const navigate = useNavigate();
   const { data, isInitialLoading, isError } = useGameQuery(Number(gameId));
 
   if (isError) {
@@ -123,25 +121,6 @@ export default function GameDetail() {
                       )}
                     </div>
                   ))}
-
-                  {/* {data?.players.map((player) => {
-                    return (
-                      <div key={player.player.id}>
-                        <div className="space-y-3 p-4">
-                          <div className="flex items-center gap-x-4">
-                            <img
-                              src={getAvatarUrl(player.player.username)}
-                              alt={player.player.username}
-                              className="h-8 w-8 rounded-full bg-gray-300"
-                            />
-                            <div className="truncate">
-                              {player.player.username}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })} */}
                 </div>
               </Section>
             </div>
@@ -149,7 +128,7 @@ export default function GameDetail() {
 
           <div className="grid grid-cols-1 gap-4">
             <Section heading="Match Chat">
-              <Chat />
+              <Chat gameId={Number(gameId)} />
             </Section>
           </div>
         </div>

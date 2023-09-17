@@ -20,14 +20,16 @@ export default function Chat(props: ChatProps) {
   });
 
   useEffect(() => {
+    const channel = gameId ? `game.${gameId}.chat` : "message.created";
+
     function onNewChat() {
       refetch();
     }
 
-    socket.on("message.created", onNewChat);
+    socket.on(channel, onNewChat);
 
     return () => {
-      socket.off("message.created", onNewChat);
+      socket.off(channel, onNewChat);
     };
   }, []);
 
@@ -75,7 +77,7 @@ export default function Chat(props: ChatProps) {
         })}
       </div>
       <div className="mt-2">
-        <CommentInput />
+        <CommentInput gameId={gameId} />
       </div>
     </>
   );
