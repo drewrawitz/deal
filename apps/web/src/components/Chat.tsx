@@ -35,7 +35,7 @@ export default function Chat(props: ChatProps) {
 
   return (
     <>
-      <div className="max-h-[500px] overflow-scroll">
+      <div className="max-h-[500px] overflow-y-auto">
         {chat?.count === 0 && (
           <p className="text-sm mb-4 text-center">
             There are no chat messages. Be the first one to chime in!
