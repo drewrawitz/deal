@@ -74,7 +74,6 @@ export default function Games() {
                   <div className="flex-none rounded-full p-1 text-green-500 bg-green-500/20">
                     <div className="h-1.5 w-1.5 rounded-full bg-current" />
                   </div>
-                  {/* <span className="text-green-600 font-medium">32 online</span> */}
                   <OnlineUsers />
                 </div>
               </div>

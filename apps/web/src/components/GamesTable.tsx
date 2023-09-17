@@ -70,7 +70,10 @@ export default function GamesTable(props: GamesTableProps) {
                         alt={game.owner.username}
                         className="h-8 w-8 rounded-full bg-gray-300"
                       />
-                      <div className="truncate">{game.owner.username}</div>
+                      <div>
+                        <div className="truncate">{game.owner.username}</div>
+                        <div className="text-gray-400">Game #{game.id}</div>
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 font-medium text-gray-900 text-sm whitespace-nowrap w-[100px]">

@@ -11,6 +11,7 @@ import ErrorPage from "./routes/Error";
 import Games from "./routes/Games";
 import App from "./App";
 import GameDetail from "./routes/GameDetail";
+import { OnlineUsersProvider } from "./providers/online-users.context";
 
 const queryClient = new QueryClient();
 
@@ -43,18 +44,20 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
-      <Toaster
-        position="top-center"
-        reverseOrder={false}
-        gutter={8}
-        containerClassName=""
-        containerStyle={{}}
-        toastOptions={{
-          className: "",
-          duration: 5000,
-        }}
-      />
-      <RouterProvider router={router} />
+      <OnlineUsersProvider>
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          gutter={8}
+          containerClassName=""
+          containerStyle={{}}
+          toastOptions={{
+            className: "",
+            duration: 5000,
+          }}
+        />
+        <RouterProvider router={router} />
+      </OnlineUsersProvider>
     </QueryClientProvider>
   </React.StrictMode>
 );

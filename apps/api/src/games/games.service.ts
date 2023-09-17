@@ -349,6 +349,10 @@ export class GamesService {
 
     // Send a WS event to the client
     this.gamesGateway.broadcastMessage(`game.${game_id}.players.leave`, null);
+    this.gamesGateway.broadcastMessage(
+      `game.${game_id}.players.kicked`,
+      body.player_id,
+    );
 
     return {
       success: true,

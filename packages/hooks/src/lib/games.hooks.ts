@@ -35,8 +35,9 @@ export function useGamesMutations() {
   const joinGameMutation = useMutation(
     ({ game_id }: { game_id: number }) => Api.Games.join(game_id),
     {
-      onSuccess: () => {
+      onSuccess: (_, params) => {
         queryClient.invalidateQueries(["games"]);
+        queryClient.invalidateQueries(["game", params.game_id]);
       },
     }
   );

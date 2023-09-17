@@ -1,9 +1,10 @@
+import toast from "react-hot-toast";
 import { classNames, getAvatarUrl } from "@deal/utils-client";
 import Layout from "../Layout";
 import Activity from "../components/Activity";
 import Chat from "../components/Chat";
 import Section from "../components/Section";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuthQuery, useGameQuery } from "@deal/hooks";
 import { useEffect, useState } from "react";
 import { socket } from "../socket";
@@ -12,6 +13,7 @@ import { SoundTriggers } from "@deal/types";
 import { soundFileMapping } from "../utils/config";
 import JoinGameButton from "../components/JoinGameButton";
 import KickPlayerButton from "../components/KickPlayerButton";
+import { useQueryClient } from "@tanstack/react-query";
 
 function NotFound() {
   return (
@@ -78,6 +80,8 @@ const players = [
 export default function GameDetail() {
   const { data: currentUser } = useAuthQuery();
   const { gameId } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [currentSound, setCurrentSound] = useState<SoundTriggers | null>(null);
   const { data, refetch, isInitialLoading, isError } = useGameQuery(
     Number(gameId)
@@ -93,6 +97,7 @@ export default function GameDetail() {
   useEffect(() => {
     const channel_join = `game.${gameId}.players.join`;
     const channel_leave = `game.${gameId}.players.leave`;
+    const channel_kicked = `game.${gameId}.players.kicked`;
 
     function onPlayersJoin() {
       playSound(SoundTriggers.ENTER_ROOM);
@@ -104,14 +109,28 @@ export default function GameDetail() {
       refetch();
     }
 
+    function onPlayersKicked(playerId: string) {
+      if (currentUser?.user_id === playerId) {
+        navigate("/games");
+        toast("You have been kicked from the game.", {
+          icon: "🚨",
+        });
+        queryClient.invalidateQueries(["games"]);
+      }
+
+      onPlayersLeave();
+    }
+
     socket.on(channel_join, onPlayersJoin);
     socket.on(channel_leave, onPlayersLeave);
+    socket.on(channel_kicked, onPlayersKicked);
 
     return () => {
       socket.off(channel_join, onPlayersJoin);
       socket.off(channel_leave, onPlayersLeave);
+      socket.off(channel_kicked, onPlayersKicked);
     };
-  }, []);
+  }, [currentUser]);
 
   if (isError) {
     return (
