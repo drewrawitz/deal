@@ -13,7 +13,11 @@ import {
 import { Game, GameEvents, GamePlayers } from '@deal/models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { GameActionBodyDto, GetGamesDto } from '@deal/dto';
+import {
+  GameActionBodyDto,
+  GetGamesDto,
+  KickPlayerFromGameBodyDto,
+} from '@deal/dto';
 import { GameEngine } from './game.engine';
 import { GamesGateway } from './games.gateway';
 import { paginateResponse } from '@deal/utils-client';
@@ -292,6 +296,55 @@ export class GamesService {
     await this.gamePlayersRepo.delete({
       game_id,
       player_id: user.user_id,
+    });
+
+    // Send a WS event to the client
+    this.gamesGateway.broadcastMessage(`game.${game_id}.players.leave`, null);
+
+    return {
+      success: true,
+    };
+  }
+
+  async kickPlayerFromGame(
+    user: CurrentUser,
+    game_id: number,
+    body: KickPlayerFromGameBodyDto,
+  ) {
+    const game = await this.gameRepo
+      .createQueryBuilder('game')
+      .leftJoinAndSelect('game.players', 'players')
+      .where('game.id = :id', { id: game_id })
+      .getOne();
+
+    // Make sure this Game exists
+    if (!game) {
+      throw new NotFoundException();
+    }
+
+    // Make sure the Game has not already started
+    if (game.status !== 'waiting') {
+      throw new BadRequestException('Game has already started');
+    }
+
+    // Check to make sure the current user is the owner of this game
+    const isOwner = game.owner_id === user.user_id;
+    if (!isOwner) {
+      throw new BadRequestException(
+        'You do not have permission to kick this player.',
+      );
+    }
+
+    // Make sure the user isn't kicking themselves
+    const isSelf = body.player_id === user.user_id;
+    if (isSelf) {
+      throw new BadRequestException('You cannot kick yourself!');
+    }
+
+    // All looks valid. Remove the player from the game
+    await this.gamePlayersRepo.delete({
+      game_id,
+      player_id: body.player_id,
     });
 
     // Send a WS event to the client

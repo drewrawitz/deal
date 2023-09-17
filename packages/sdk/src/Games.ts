@@ -35,8 +35,19 @@ export default class Games {
     return response.data;
   }
 
-  static async leave(game_id: number): Promise<JoinGameResponse> {
+  static async leave(game_id: number): Promise<any> {
     const response = await axios.post(`${this.baseURL}/${game_id}/leave`);
+
+    return response.data;
+  }
+
+  static async kickPlayer(
+    game_id: number,
+    player_id: string
+  ): Promise<JoinGameResponse> {
+    const response = await axios.post(`${this.baseURL}/${game_id}/kick`, {
+      player_id,
+    });
 
     return response.data;
   }

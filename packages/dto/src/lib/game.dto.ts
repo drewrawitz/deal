@@ -36,3 +36,11 @@ const GetGamesSchema = z.object({
 });
 
 export class GetGamesDto extends createZodDto(GetGamesSchema) {}
+
+const KickPlayerFromGameSchema = z.object({
+  player_id: z.string(),
+});
+
+export class KickPlayerFromGameBodyDto extends createZodDto(
+  KickPlayerFromGameSchema
+) {}

@@ -50,8 +50,19 @@ export function useGamesMutations() {
     }
   );
 
+  const kickPlayerFromGameMutation = useMutation(
+    ({ game_id, player_id }: { game_id: number; player_id: string }) =>
+      Api.Games.kickPlayer(game_id, player_id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["games"]);
+      },
+    }
+  );
+
   return {
     joinGameMutation,
     leaveGameMutation,
+    kickPlayerFromGameMutation,
   };
 }

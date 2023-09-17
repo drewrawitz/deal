@@ -11,7 +11,12 @@ import {
 import { GamesService } from './games.service';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { Request as RequestType } from 'express';
-import { GameActionBodyDto, GameIdParamDto, GetGamesDto } from '@deal/dto';
+import {
+  GameActionBodyDto,
+  GameIdParamDto,
+  GetGamesDto,
+  KickPlayerFromGameBodyDto,
+} from '@deal/dto';
 
 @Controller({
   path: 'games',
@@ -55,6 +60,16 @@ export class GamesController {
     @Param() params: GameIdParamDto,
   ) {
     return this.gamesService.leaveGame(req.user, params.game_id);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post('/:game_id/kick')
+  async kickPlayerFromGame(
+    @Request() req: RequestType,
+    @Param() params: GameIdParamDto,
+    @Body() body: KickPlayerFromGameBodyDto,
+  ) {
+    return this.gamesService.kickPlayerFromGame(req.user, params.game_id, body);
   }
 
   @UseGuards(AuthenticatedGuard)

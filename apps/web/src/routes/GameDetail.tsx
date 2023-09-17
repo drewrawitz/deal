@@ -4,13 +4,14 @@ import Activity from "../components/Activity";
 import Chat from "../components/Chat";
 import Section from "../components/Section";
 import { useParams } from "react-router-dom";
-import { useGameQuery } from "@deal/hooks";
+import { useAuthQuery, useGameQuery } from "@deal/hooks";
 import { useEffect, useState } from "react";
 import { socket } from "../socket";
 import AudioPlayer from "../components/AudioPlayer";
 import { SoundTriggers } from "@deal/types";
 import { soundFileMapping } from "../utils/config";
 import JoinGameButton from "../components/JoinGameButton";
+import KickPlayerButton from "../components/KickPlayerButton";
 
 function NotFound() {
   return (
@@ -75,12 +76,14 @@ const players = [
 ];
 
 export default function GameDetail() {
+  const { data: currentUser } = useAuthQuery();
   const { gameId } = useParams();
   const [currentSound, setCurrentSound] = useState<SoundTriggers | null>(null);
   const { data, refetch, isInitialLoading, isError } = useGameQuery(
     Number(gameId)
   );
   const canStartGame = data?.players?.length && data.players.length > 1;
+  const isOwner = data?.owner?.id === currentUser?.user_id;
 
   const playSound = (sound: SoundTriggers) => {
     setCurrentSound(sound);
@@ -170,6 +173,16 @@ export default function GameDetail() {
                           <div className="truncate text-sm mt-1">
                             {data.players[i].player.username}
                           </div>
+                          {data.players[i].player.id === data.owner.id ? (
+                            <span className="text-xs bg-blue-800 text-white py-1 px-2 rounded-md">
+                              Owner
+                            </span>
+                          ) : isOwner ? (
+                            <KickPlayerButton
+                              game={data}
+                              player={data.players[i].player}
+                            />
+                          ) : null}
                         </div>
                       ) : (
                         <p className="text-sm text-gray-500">Empty</p>

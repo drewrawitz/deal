@@ -1,6 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Api from "@deal/sdk";
 import { LoginParams } from "@deal/types";
+// This is weirdly needed, even though it's not used.
+// @see: https://github.com/microsoft/TypeScript/issues/47663
+import * as temp from "@deal/types";
 
 const getCurrentUser = async () => {
   return Api.Me.user();

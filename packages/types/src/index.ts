@@ -13,7 +13,7 @@ export interface LoginParams {
   password: string;
 }
 
-interface UserFields {
+export interface PlayerFields {
   id: User["id"];
   username: User["id"];
   avatar: User["avatar"];
@@ -33,7 +33,7 @@ export interface JoinGameResponse extends GamePlayers {}
 export type ListChatMessagesResponse = {
   content: Message["content"];
   created_at: Message["created_at"];
-  user: UserFields;
+  user: PlayerFields;
 };
 
 export type ListGamesResponse = {
@@ -43,9 +43,9 @@ export type ListGamesResponse = {
   started_at: Game["started_at"];
   players: {
     position: GamePlayers["position"];
-    player: UserFields;
+    player: PlayerFields;
   }[];
-  owner: UserFields;
+  owner: PlayerFields;
 };
 
 export enum GameStatus {
