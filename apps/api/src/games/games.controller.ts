@@ -31,6 +31,11 @@ export class GamesController {
     return this.gamesService.createGame(req.user);
   }
 
+  @Get('/:game_id')
+  async getGameById(@Param() params: GameIdParamDto) {
+    return this.gamesService.getSingleGame(params.game_id);
+  }
+
   @UseGuards(AuthenticatedGuard)
   @Post('/:game_id/start')
   async startGame(@Param() params: GameIdParamDto) {

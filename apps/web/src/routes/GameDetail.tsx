@@ -3,6 +3,19 @@ import Layout from "../Layout";
 import Activity from "../components/Activity";
 import Chat from "../components/Chat";
 import Section from "../components/Section";
+import { useParams, useNavigate } from "react-router-dom";
+import { useGameQuery } from "@deal/hooks";
+import LoadingSpinner from "../components/LoadingSpinner";
+
+function NotFound() {
+  return (
+    <section>
+      <div className="overflow-hidden rounded-lg bg-white shadow p-6">
+        <p>This game was not found.</p>
+      </div>
+    </section>
+  );
+}
 
 const players = [
   {
@@ -57,9 +70,96 @@ const players = [
 ];
 
 export default function GameDetail() {
+  const { gameId } = useParams();
+  const navigate = useNavigate();
+  const { data, isInitialLoading, isError } = useGameQuery(Number(gameId));
+
+  if (isError) {
+    return (
+      <Layout heading="Game Not Found">
+        <NotFound />
+      </Layout>
+    );
+  }
+
+  if (isInitialLoading) {
+    return <Layout heading="Loading...">&nbsp;</Layout>;
+  }
+
+  if (data?.status === "waiting") {
+    return (
+      <Layout
+        heading={`Game #${gameId}`}
+        slot={
+          <div className="font-mono rounded-md bg-blue-400 px-2 py-0.5 text-white">
+            Waiting for players
+          </div>
+        }
+      >
+        <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
+          <div className="grid grid-cols-1 gap-4 lg:col-span-2">
+            <div className="space-y-8">
+              <Section heading="Game Lobby">
+                <div className="grid grid-cols-5">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <div key={i} className="py-4">
+                      <h4 className="text-lg font-semibold mb-2">
+                        Seat {i + 1}
+                      </h4>
+
+                      {data?.players?.[i] ? (
+                        <div>
+                          <img
+                            src={getAvatarUrl(data.players[i].player.username)}
+                            alt={data.players[i].player.username}
+                            className="h-8 w-8 rounded-full bg-gray-300"
+                          />
+                          <div className="truncate text-sm mt-1">
+                            {data.players[i].player.username}
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500">Empty</p>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* {data?.players.map((player) => {
+                    return (
+                      <div key={player.player.id}>
+                        <div className="space-y-3 p-4">
+                          <div className="flex items-center gap-x-4">
+                            <img
+                              src={getAvatarUrl(player.player.username)}
+                              alt={player.player.username}
+                              className="h-8 w-8 rounded-full bg-gray-300"
+                            />
+                            <div className="truncate">
+                              {player.player.username}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })} */}
+                </div>
+              </Section>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            <Section heading="Match Chat">
+              <Chat />
+            </Section>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout
-      heading="Game #123"
+      heading={`Game #${gameId}`}
       slot={
         <div className="text-center space-y-2">
           <div className="font-mono text-xl text-white">defekt7x</div>

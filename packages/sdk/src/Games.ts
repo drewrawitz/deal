@@ -23,6 +23,12 @@ export default class Games {
     return response.data;
   }
 
+  static async retreive(game_id: number): Promise<ListGamesResponse> {
+    const response = await axios.get(`${this.baseURL}/${game_id}`);
+
+    return response.data;
+  }
+
   static async join(game_id: number): Promise<JoinGameResponse> {
     const response = await axios.post(`${this.baseURL}/${game_id}/join`);
 

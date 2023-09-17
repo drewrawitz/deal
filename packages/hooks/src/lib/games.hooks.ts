@@ -10,6 +10,15 @@ const getGames = async (opts: GetGamesDto) => {
   return Api.Games.list(opts);
 };
 
+export function useGameQuery(game_id: number) {
+  return useQuery({
+    queryKey: ["game", game_id],
+    queryFn: () => Api.Games.retreive(game_id),
+    staleTime: 1000 * 60 * 60, // 1 hour
+    retry: false,
+  });
+}
+
 export function useGamesQuery(opts: GetGamesDto) {
   return useQuery({
     queryKey: ["games", JSON.stringify(opts)],

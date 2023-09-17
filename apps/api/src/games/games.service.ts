@@ -24,6 +24,20 @@ interface HandleActionParams {
   state: GameState;
 }
 
+const selectGameFields = [
+  'game.id',
+  'game.status',
+  'game.created_at',
+  'game.started_at',
+  'player.id',
+  'player.username',
+  'player.avatar',
+  'players.position',
+  'owner.id',
+  'owner.username',
+  'owner.avatar',
+];
+
 @Injectable()
 export class GamesService {
   constructor(
@@ -47,19 +61,7 @@ export class GamesService {
       .leftJoin('game.players', 'players')
       .leftJoin('players.player', 'player')
       .leftJoin('game.owner', 'owner')
-      .select([
-        'game.id',
-        'game.status',
-        'game.created_at',
-        'game.started_at',
-        'player.id',
-        'player.username',
-        'player.avatar',
-        'players.position',
-        'owner.id',
-        'owner.username',
-        'owner.avatar',
-      ])
+      .select(selectGameFields)
       .limit(take)
       .offset(skip)
       .orderBy('game.created_at', 'DESC');
@@ -71,6 +73,23 @@ export class GamesService {
     const [games, count] = await qb.getManyAndCount();
 
     return paginateResponse(games, count, page, take);
+  }
+
+  async getSingleGame(game_id: number) {
+    try {
+      const game = await this.gameRepo
+        .createQueryBuilder('game')
+        .leftJoin('game.players', 'players')
+        .leftJoin('players.player', 'player')
+        .leftJoin('game.owner', 'owner')
+        .select(selectGameFields)
+        .where('game.id = :id', { id: game_id })
+        .getOneOrFail();
+
+      return game;
+    } catch (err) {
+      throw new NotFoundException();
+    }
   }
 
   async createGame(user: CurrentUser) {
