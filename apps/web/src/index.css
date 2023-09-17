@@ -18,6 +18,13 @@
 
 .chat {
   @apply grid grid-cols-2 gap-x-3 mb-6 text-sm;
+
+  &--admin {
+    .chat-header {
+      @apply text-yellow-700;
+    }
+  }
+
   &-image {
     @apply self-start row-span-2;
   }

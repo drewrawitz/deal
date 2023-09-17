@@ -1,3 +1,4 @@
+import classNamesImport from "classnames";
 import { ulid } from "ulid";
 
 /**
@@ -15,9 +16,7 @@ export function generateEntityId(idProperty: string, prefix?: string): string {
   return `${prefix}${id}`;
 }
 
-export function classNames(...classes: any[]) {
-  return classes.filter(Boolean).join(" ");
-}
+export const classNames = classNamesImport;
 
 export const getAvatarUrl = (username: string) => {
   return `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${username}`;

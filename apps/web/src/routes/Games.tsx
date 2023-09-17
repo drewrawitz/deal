@@ -66,7 +66,7 @@ export default function Games() {
         <div className="grid grid-cols-1 gap-4">
           <section aria-labelledby="section-2-title">
             <div className="overflow-hidden rounded-lg bg-white shadow">
-              <div className="px-6 py-4 flex items-center justify-between mb-4 border-b">
+              <div className="px-6 py-4 flex items-center justify-between border-b">
                 <h2 className="text-xl font-semibold leading-6 text-body">
                   Chat
                 </h2>
