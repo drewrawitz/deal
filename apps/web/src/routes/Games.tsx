@@ -6,6 +6,7 @@ import { GameStatus } from "@deal/types";
 import { socket } from "../socket";
 import { useEffect } from "react";
 import OnlineUsers from "../components/OnlineUsers";
+import CreateNewGameButton from "../components/CreateNewGameButton";
 
 export default function Games() {
   const { data: inProgressGames } = useGamesQuery({
@@ -29,17 +30,7 @@ export default function Games() {
   }, []);
 
   return (
-    <Layout
-      heading="Game Lobby"
-      slot={
-        <button
-          type="button"
-          className="rounded-md bg-[#ADC4D7] hover:bg-[#ADC4D7]/80 px-3.5 py-2.5 text-sm font-semibold text-body shadow-sm"
-        >
-          New Game
-        </button>
-      }
-    >
+    <Layout heading="Game Lobby" slot={<CreateNewGameButton />}>
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <div className="space-y-8">

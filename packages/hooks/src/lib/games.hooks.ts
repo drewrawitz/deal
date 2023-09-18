@@ -32,6 +32,12 @@ export function useGamesQuery(opts: GetGamesDto) {
 export function useGamesMutations() {
   const queryClient = useQueryClient();
 
+  const createGameMutation = useMutation(() => Api.Games.create(), {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["games"]);
+    },
+  });
+
   const joinGameMutation = useMutation(
     ({ game_id }: { game_id: number }) => Api.Games.join(game_id),
     {
@@ -62,6 +68,7 @@ export function useGamesMutations() {
   );
 
   return {
+    createGameMutation,
     joinGameMutation,
     leaveGameMutation,
     kickPlayerFromGameMutation,

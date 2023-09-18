@@ -28,6 +28,7 @@ export interface PaginatedResult<T> {
   last_page: number;
 }
 
+export interface CreateGameResponse extends Game {}
 export interface JoinGameResponse extends GamePlayers {}
 
 export interface LeaveGameResponse {
