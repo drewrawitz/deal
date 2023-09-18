@@ -4,6 +4,7 @@ import type {
   PaginatedResult,
   ListGamesResponse,
   JoinGameResponse,
+  LeaveGameResponse,
 } from "@deal/types";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -35,7 +36,7 @@ export default class Games {
     return response.data;
   }
 
-  static async leave(game_id: number): Promise<any> {
+  static async leave(game_id: number): Promise<LeaveGameResponse> {
     const response = await axios.post(`${this.baseURL}/${game_id}/leave`);
 
     return response.data;

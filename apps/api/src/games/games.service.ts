@@ -9,6 +9,7 @@ import {
   GameStatus,
   GameState,
   TypedGameEvent,
+  LeaveGameResponse,
 } from '@deal/types';
 import { Game, GameEvents, GamePlayers } from '@deal/models';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -269,7 +270,10 @@ export class GamesService {
     return players;
   }
 
-  async leaveGame(user: CurrentUser, game_id: number) {
+  async leaveGame(
+    user: CurrentUser,
+    game_id: number,
+  ): Promise<LeaveGameResponse> {
     const game = await this.gameRepo
       .createQueryBuilder('game')
       .leftJoinAndSelect('game.players', 'players')
@@ -292,6 +296,18 @@ export class GamesService {
       throw new BadRequestException('You have not joined this game.');
     }
 
+    // Is this the owner of the game, and are they the only player?
+    // If so, delete the game entirely
+    const isOwner = game.owner_id === user.user_id;
+    if (isOwner && playerIds.length === 1) {
+      await this.gameRepo.delete(game_id);
+
+      return {
+        hasDeletedGame: true,
+        success: true,
+      };
+    }
+
     // All looks valid. Remove the player from the game
     await this.gamePlayersRepo.delete({
       game_id,
@@ -302,6 +318,7 @@ export class GamesService {
     this.gamesGateway.broadcastMessage(`game.${game_id}.players.leave`, null);
 
     return {
+      hasDeletedGame: false,
       success: true,
     };
   }

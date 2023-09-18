@@ -44,7 +44,6 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() userId: string,
   ): void {
-    console.log('handleAuthenticated', userId);
     if (!this.onlineUsersMap.has(userId)) {
       this.onlineUsersMap.set(userId, new Set());
     }

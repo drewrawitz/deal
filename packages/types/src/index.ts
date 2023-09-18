@@ -30,6 +30,11 @@ export interface PaginatedResult<T> {
 
 export interface JoinGameResponse extends GamePlayers {}
 
+export interface LeaveGameResponse {
+  hasDeletedGame: boolean;
+  success: boolean;
+}
+
 export type ListChatMessagesResponse = {
   content: Message["content"];
   created_at: Message["created_at"];

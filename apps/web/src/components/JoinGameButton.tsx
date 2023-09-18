@@ -47,8 +47,15 @@ export default function JoinGameButton(props: JoinGameButtonProps) {
   const onClickLeaveGame = async () => {
     try {
       setActionStatus("leaving");
-      await leaveGameMutation.mutateAsync({ game_id: game.id });
-      navigate(`/games/${game.id}`);
+      const data = await leaveGameMutation.mutateAsync({ game_id: game.id });
+
+      // Was the game deleted?
+      if (data.hasDeletedGame) {
+        navigate(`/games`);
+        toast.success("You have left the game. The game has been deleted.");
+      } else {
+        navigate(`/games/${game.id}`);
+      }
     } catch (err) {
       handleError(err);
     } finally {
