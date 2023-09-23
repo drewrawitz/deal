@@ -75,11 +75,16 @@ export interface ShuffleEvent {
   };
 }
 
+export interface DealToPlayer {
+  username: string;
+  cards: number[];
+}
+
 export interface DealEvent {
   event_type: "deal";
   data: {
     remainingDeck: number[];
-    dealtCards: Record<string, number[]>;
+    dealtCards: Record<string, DealToPlayer>;
   };
 }
 
@@ -135,6 +140,7 @@ type GameProperties = {
 export type GameState = {
   currentTurn: {
     player_id: string;
+    username: string;
     actionsTaken: number;
     hasDrawnCards: boolean;
   };
@@ -142,6 +148,7 @@ export type GameState = {
   players: Record<
     string,
     {
+      username: string;
       hand: number[];
       bank: number[];
       board: GameProperties[];

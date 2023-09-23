@@ -6,6 +6,7 @@ import type {
   JoinGameResponse,
   LeaveGameResponse,
   CreateGameResponse,
+  GameState,
 } from "@deal/types";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -27,6 +28,12 @@ export default class Games {
 
   static async retreive(game_id: number): Promise<ListGamesResponse> {
     const response = await axios.get(`${this.baseURL}/${game_id}`);
+
+    return response.data;
+  }
+
+  static async state(game_id: number): Promise<GameState> {
+    const response = await axios.get(`${this.baseURL}/${game_id}/state`);
 
     return response.data;
   }

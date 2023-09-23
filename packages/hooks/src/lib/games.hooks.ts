@@ -29,6 +29,14 @@ export function useGamesQuery(opts: GetGamesDto) {
   });
 }
 
+export function useGameStateQuery(game_id: number) {
+  return useQuery({
+    queryKey: ["game", game_id, "state"],
+    queryFn: () => Api.Games.state(game_id),
+    staleTime: 1000 * 60 * 60, // 1 hour
+  });
+}
+
 export function useGamesMutations() {
   const queryClient = useQueryClient();
 

@@ -2,6 +2,7 @@ import { Cards, Properties } from '@deal/models';
 import {
   BankEvent,
   DealEvent,
+  DealToPlayer,
   DrawEvent,
   GameState,
   PlayEvent,
@@ -70,15 +71,18 @@ export class GameEngine {
     this.gameState.deck.splice(0, cardsDealt);
 
     // Assign cards to players based on the event data.
-    for (const [playerId, cards] of Object.entries(event.data?.dealtCards) as [
+    for (const [playerId, user] of Object.entries(event.data?.dealtCards) as [
       string,
-      number[],
+      DealToPlayer,
     ][]) {
       const player = this.gameState[playerId];
+      const { cards, username } = user;
       if (player) {
         player.hand = cards;
+        player.username = username;
       } else {
         this.gameState.players[playerId] = {
+          username,
           hand: cards,
           bank: [],
           board: [],
@@ -92,6 +96,10 @@ export class GameEngine {
     this.gameState.currentTurn.player_id = event.data.player_id;
     this.gameState.currentTurn.actionsTaken = 0;
     this.gameState.currentTurn.hasDrawnCards = false;
+
+    // Get username from player ID
+    const username = this.gameState.players[event.data.player_id].username;
+    this.gameState.currentTurn.username = username;
   }
 
   private handleDrawEvent(event: DrawEvent) {

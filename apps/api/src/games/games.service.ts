@@ -122,6 +122,7 @@ export class GamesService {
     const game = await this.gameRepo
       .createQueryBuilder('game')
       .leftJoinAndSelect('game.players', 'players')
+      .leftJoinAndSelect('players.player', 'player')
       .where('game.id = :id', { id: game_id })
       .getOne();
 
@@ -170,13 +171,18 @@ export class GamesService {
         const dealtCards: Record<number, number[]> = {};
 
         for (let i = 0; i < 5 * numPlayers; i++) {
-          const currentPlayerId = game.players[i % numPlayers].player_id; // This ensures an alternating pattern.
+          const currentPlayer = game.players[i % numPlayers];
+          const currentPlayerId = currentPlayer.player_id; // This ensures an alternating pattern.
+          console.log({ currentPlayer });
 
           if (!dealtCards[currentPlayerId]) {
-            dealtCards[currentPlayerId] = [];
+            dealtCards[currentPlayerId] = {
+              cards: [],
+              username: currentPlayer.player?.username,
+            };
           }
 
-          dealtCards[currentPlayerId].push(cards[i]);
+          dealtCards[currentPlayerId].cards.push(cards[i]);
         }
 
         // Remove the dealt cards from the deck
@@ -392,6 +398,7 @@ export class GamesService {
     // 1. Game Initialization
     const initialState: GameState = {
       currentTurn: {
+        username: '',
         player_id: '',
         actionsTaken: 0,
         hasDrawnCards: false,
