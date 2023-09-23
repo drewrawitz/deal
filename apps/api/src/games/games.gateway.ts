@@ -52,7 +52,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.broadcastMessage('onlineCount', this.onlineUsersMap.size);
   }
 
-  broadcastMessage(key, value) {
+  broadcastMessage(key, value = null) {
     this.server.emit(key, value);
   }
 }

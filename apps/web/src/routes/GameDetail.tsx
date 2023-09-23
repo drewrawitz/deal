@@ -14,6 +14,7 @@ import { soundFileMapping } from "../utils/config";
 import JoinGameButton from "../components/JoinGameButton";
 import KickPlayerButton from "../components/KickPlayerButton";
 import { useQueryClient } from "@tanstack/react-query";
+import StartGameButton from "../components/StartGameButton";
 
 function NotFound() {
   return (
@@ -98,6 +99,11 @@ export default function GameDetail() {
     const channel_join = `game.${gameId}.players.join`;
     const channel_leave = `game.${gameId}.players.leave`;
     const channel_kicked = `game.${gameId}.players.kicked`;
+    const channel_change = `game.${gameId}.change`;
+
+    function onGameChange() {
+      refetch();
+    }
 
     function onPlayersJoin() {
       playSound(SoundTriggers.ENTER_ROOM);
@@ -124,11 +130,13 @@ export default function GameDetail() {
     socket.on(channel_join, onPlayersJoin);
     socket.on(channel_leave, onPlayersLeave);
     socket.on(channel_kicked, onPlayersKicked);
+    socket.on(channel_change, onGameChange);
 
     return () => {
       socket.off(channel_join, onPlayersJoin);
       socket.off(channel_leave, onPlayersLeave);
       socket.off(channel_kicked, onPlayersKicked);
+      socket.off(channel_change, onGameChange);
     };
   }, [currentUser]);
 
@@ -151,9 +159,7 @@ export default function GameDetail() {
         slot={
           <div className="space-y-4 text-right">
             {canStartGame ? (
-              <div className="font-mono rounded-md bg-green-600 px-2 py-0.5 text-white">
-                Ready to start
-              </div>
+              <StartGameButton game={data} />
             ) : (
               <div className="font-mono rounded-md bg-blue-400 px-2 py-0.5 text-white">
                 Waiting for players

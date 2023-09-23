@@ -3,6 +3,7 @@ import { useAuthQuery, useGamesMutations } from "@deal/hooks";
 import { ListGamesResponse } from "@deal/types";
 import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { handleError } from "../utils/shared";
 
 interface JoinGameButtonProps {
   game: ListGamesResponse;
@@ -25,11 +26,6 @@ export default function JoinGameButton(props: JoinGameButtonProps) {
       game.players.some((p) => p.player.id === currentUser.user_id)
     );
   }, [currentUser, game]);
-
-  const handleError = (err: any) => {
-    console.error("Something went wrong", err);
-    toast.error(err?.response?.data?.message ?? "Something went wrong");
-  };
 
   const onClickJoinGame = async () => {
     try {

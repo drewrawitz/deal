@@ -43,6 +43,12 @@ export default class Games {
     return response.data;
   }
 
+  static async start(game_id: number): Promise<any> {
+    const response = await axios.post(`${this.baseURL}/${game_id}/start`);
+
+    return response.data;
+  }
+
   static async leave(game_id: number): Promise<LeaveGameResponse> {
     const response = await axios.post(`${this.baseURL}/${game_id}/leave`);
 

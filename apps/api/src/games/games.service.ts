@@ -213,6 +213,9 @@ export class GamesService {
 
         await transactionalEntityManager.save(GameEvents, playerTurnEvent);
 
+        // Send a WS event to the client
+        this.gamesGateway.broadcastMessage(`game.${game_id}.change`);
+
         return playerTurnEvent;
       },
     );
