@@ -64,7 +64,6 @@ interface ActiveGameBoardProps {
 export default function ActiveGameBoard(props: ActiveGameBoardProps) {
   const { gameId } = props;
   const { data: state, isFetching } = useGameStateQuery(gameId);
-  console.log({ state });
 
   if (isFetching) {
     return <Layout heading="Loading...">&nbsp;</Layout>;
@@ -134,7 +133,7 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                               {player.username}
                             </span>
                             <span className="block">
-                              Hand: {player.hand.length}
+                              Hand: {player.hand?.length ?? 0}
                             </span>
                           </div>
                           <div className="flex-1 flex items-start space-x-12">
@@ -174,11 +173,14 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
             </Section>
             <Section heading="My Hand">
               <div className="grid grid-cols-7 gap-2">
-                <img src="/red-property-card.jpeg" />
-                <img src="/brown-property-card.jpeg" />
-                <img src="/5m.jpeg" />
-                <img src="/rent-wild.jpeg" />
-                <img src="/prop-wild.jpeg" />
+                {state.myHand?.map((card, idx) => {
+                  return <li key={idx}>{card}</li>;
+                })}
+                {/* // <img src="/red-property-card.jpeg" />
+                // <img src="/brown-property-card.jpeg" />
+                // <img src="/5m.jpeg" />
+                // <img src="/rent-wild.jpeg" />
+                // <img src="/prop-wild.jpeg" /> */}
               </div>
             </Section>
           </div>

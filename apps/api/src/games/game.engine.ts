@@ -13,10 +13,12 @@ import {
 
 export class GameEngine {
   private gameState: GameState;
+  private currentUserId: string;
   private cards = Cards;
   private properties = Properties;
 
-  constructor(initialState: GameState) {
+  constructor(user_id: string, initialState: GameState) {
+    this.currentUserId = user_id;
     this.gameState = initialState;
   }
 
@@ -70,20 +72,22 @@ export class GameEngine {
 
     this.gameState.deck.splice(0, cardsDealt);
 
+    if (event.data?.dealtCards[this.currentUserId]) {
+      this.gameState.myHand = event.data.dealtCards[this.currentUserId].cards;
+    }
+
     // Assign cards to players based on the event data.
     for (const [playerId, user] of Object.entries(event.data?.dealtCards) as [
       string,
       DealToPlayer,
     ][]) {
       const player = this.gameState[playerId];
-      const { cards, username } = user;
+      const { username } = user;
       if (player) {
-        player.hand = cards;
         player.username = username;
       } else {
         this.gameState.players[playerId] = {
           username,
-          hand: cards,
           bank: [],
           board: [],
           sets: [],

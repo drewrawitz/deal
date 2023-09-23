@@ -394,7 +394,7 @@ export class GamesService {
     return data as TypedGameEvent[];
   }
 
-  async getGameState(game_id: number): Promise<GameState> {
+  async getGameState(user: CurrentUser, game_id: number): Promise<GameState> {
     // 1. Game Initialization
     const initialState: GameState = {
       currentTurn: {
@@ -407,9 +407,10 @@ export class GamesService {
       players: {},
       deck: [],
       discardPile: [],
+      myHand: [],
     };
 
-    const engine = new GameEngine(initialState);
+    const engine = new GameEngine(user.user_id, initialState);
 
     // 2. Event Processing
     const events = await this.fetchGameEvents(game_id);
@@ -585,8 +586,8 @@ export class GamesService {
   ) {
     await this.validateGame(game_id);
 
-    const state = await this.getGameState(game_id);
-    this.gameEngine = new GameEngine(state);
+    const state = await this.getGameState(user, game_id);
+    this.gameEngine = new GameEngine(user.user_id, state);
 
     await this.validatePlayerTurn(this.gameEngine.state, user.user_id);
 

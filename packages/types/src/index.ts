@@ -149,7 +149,7 @@ export type GameState = {
     string,
     {
       username: string;
-      hand: number[];
+      hand?: number[];
       bank: number[];
       board: GameProperties[];
       sets: any;
@@ -157,6 +157,7 @@ export type GameState = {
   >;
   deck: number[];
   discardPile: number[];
+  myHand: number[];
 };
 
 declare global {

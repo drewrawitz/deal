@@ -84,7 +84,10 @@ export class GamesController {
 
   @UseGuards(AuthenticatedGuard)
   @Get('/:game_id/state')
-  async getGameState(@Param() params: GameIdParamDto) {
-    return this.gamesService.getGameState(params.game_id);
+  async getGameState(
+    @Request() req: RequestType,
+    @Param() params: GameIdParamDto,
+  ) {
+    return this.gamesService.getGameState(req.user, params.game_id);
   }
 }
