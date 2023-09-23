@@ -51,7 +51,7 @@ export class Game {
   players: GamePlayers[];
 
   @OneToMany(() => GameEvents, (events) => events.game, {
-    cascade: ["remove"],
+    cascade: true,
   })
   events: GameEvents[];
 
