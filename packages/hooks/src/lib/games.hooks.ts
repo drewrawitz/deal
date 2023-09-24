@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Api from "@deal/sdk";
-import { GetGamesDto } from "@deal/dto";
+import { GameActionBodyDto, GetGamesDto } from "@deal/dto";
 import { paginatedPlaceholder } from "../shared/helpers";
 // This is weirdly needed, even though it's not used.
 // @see: https://github.com/microsoft/TypeScript/issues/47663
@@ -85,11 +85,22 @@ export function useGamesMutations() {
     }
   );
 
+  const gameActionMutation = useMutation(
+    ({ game_id, body }: { game_id: number; body: GameActionBodyDto }) =>
+      Api.Games.action(game_id, body),
+    {
+      onSuccess: (_, params) => {
+        queryClient.invalidateQueries(["game", params.game_id, "state"]);
+      },
+    }
+  );
+
   return {
     startGameMutation,
     createGameMutation,
     joinGameMutation,
     leaveGameMutation,
     kickPlayerFromGameMutation,
+    gameActionMutation,
   };
 }

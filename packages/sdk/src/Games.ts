@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GetGamesDto } from "@deal/dto";
+import { GameActionBodyDto, GetGamesDto } from "@deal/dto";
 import type {
   PaginatedResult,
   ListGamesResponse,
@@ -46,6 +46,17 @@ export default class Games {
 
   static async join(game_id: number): Promise<JoinGameResponse> {
     const response = await axios.post(`${this.baseURL}/${game_id}/join`);
+
+    return response.data;
+  }
+
+  static async action(
+    game_id: number,
+    body: GameActionBodyDto
+  ): Promise<JoinGameResponse> {
+    const response = await axios.post(`${this.baseURL}/${game_id}/action`, {
+      ...body,
+    });
 
     return response.data;
   }

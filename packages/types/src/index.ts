@@ -152,6 +152,7 @@ export type GameState = {
       hand?: number[];
       bank: number[];
       board: GameProperties[];
+      numCards: number;
       sets: any;
     }
   >;

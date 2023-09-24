@@ -452,7 +452,7 @@ export class GamesService {
 
   async handleDrawCardsAction(params: HandleActionParams) {
     const { game_id, user_id, state } = params;
-    const playerHand = state.players[params.user_id].hand;
+    const numCards = state.players[params.user_id].numCards;
 
     if (state.currentTurn.hasDrawnCards) {
       throw new BadRequestException(
@@ -461,7 +461,7 @@ export class GamesService {
     }
 
     // If the user is out of cards, they draw 5 new cards.  Otherwise, pick up 2
-    const cardsToDraw = playerHand.length === 0 ? 5 : 2;
+    const cardsToDraw = numCards === 0 ? 5 : 2;
     const cardsDrawn = state.deck.splice(0, cardsToDraw);
 
     await this.createAndSaveEvent(game_id, user_id, 'draw', { cardsDrawn });
@@ -608,6 +608,9 @@ export class GamesService {
         await this.handleEndTurnAction(params);
         break;
     }
+
+    // Send a WS event to the client
+    this.gamesGateway.broadcastMessage(`game.${game_id}.action`);
 
     return this.gameEngine.state;
   }

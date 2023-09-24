@@ -67,8 +67,9 @@ export class GameEngine {
   }
 
   private handleDealEvent(event: DealEvent) {
+    const NUM_CARDS = 5;
     const numberOfPlayers = Object.keys(event.data.dealtCards).length;
-    const cardsDealt = numberOfPlayers * 5;
+    const cardsDealt = numberOfPlayers * NUM_CARDS;
 
     this.gameState.deck.splice(0, cardsDealt);
 
@@ -83,14 +84,17 @@ export class GameEngine {
     ][]) {
       const player = this.gameState[playerId];
       const { username } = user;
+
       if (player) {
         player.username = username;
+        player.numCards = NUM_CARDS;
       } else {
         this.gameState.players[playerId] = {
           username,
           bank: [],
           board: [],
           sets: [],
+          numCards: NUM_CARDS,
         };
       }
     }
@@ -108,7 +112,13 @@ export class GameEngine {
 
   private handleDrawEvent(event: DrawEvent) {
     this.gameState.deck.splice(0, event.data.cardsDrawn.length);
-    this.gameState.players[event.player_id].hand.push(...event.data.cardsDrawn);
+    this.gameState.players[event.player_id].numCards +=
+      event.data.cardsDrawn.length;
+
+    if (event.player_id === this.currentUserId) {
+      this.gameState.myHand.push(...event.data.cardsDrawn);
+    }
+
     this.gameState.currentTurn.hasDrawnCards = true;
   }
 

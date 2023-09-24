@@ -3,7 +3,14 @@ import Activity from "./Activity";
 import Layout from "../Layout";
 import Section from "./Section";
 import Chat from "./Chat";
-import { useGameStateQuery } from "@deal/hooks";
+import {
+  useAuthQuery,
+  useGameStateQuery,
+  useGamesMutations,
+} from "@deal/hooks";
+import { useEffect, useState } from "react";
+import { handleError } from "../utils/shared";
+import { socket } from "../socket";
 
 interface ActiveGameBoardProps {
   gameId: number;
@@ -63,7 +70,40 @@ interface ActiveGameBoardProps {
 
 export default function ActiveGameBoard(props: ActiveGameBoardProps) {
   const { gameId } = props;
-  const { data: state, isFetching } = useGameStateQuery(gameId);
+  const { data: state, refetch, isFetching } = useGameStateQuery(gameId);
+  const { data: currentUser } = useAuthQuery();
+  const { gameActionMutation } = useGamesMutations();
+  const [isProcessing, setProcessing] = useState(false);
+
+  useEffect(() => {
+    const channel_action = `game.${gameId}.action`;
+
+    function onGameAction() {
+      refetch();
+    }
+
+    socket.on(channel_action, onGameAction);
+
+    return () => {
+      socket.off(channel_action, onGameAction);
+    };
+  }, [currentUser]);
+
+  const onClickDrawCards = async () => {
+    try {
+      setProcessing(true);
+      await gameActionMutation.mutateAsync({
+        game_id: gameId,
+        body: {
+          action: "drawCards",
+        },
+      });
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   if (isFetching) {
     return <Layout heading="Loading...">&nbsp;</Layout>;
@@ -72,6 +112,9 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
   if (!state) {
     return "Game not found";
   }
+
+  const isCurrentTurn = state.currentTurn?.username === currentUser?.username;
+  const { hasDrawnCards } = state.currentTurn;
 
   return (
     <Layout
@@ -108,7 +151,6 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                   const isCurrentPlayer =
                     state.currentTurn?.username === player.username;
                   const bankTotal = 0;
-                  console.log(player.bank);
 
                   return (
                     <div key={player.username}>
@@ -133,7 +175,7 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                               {player.username}
                             </span>
                             <span className="block">
-                              Hand: {player.hand?.length ?? 0}
+                              Hand: {player.numCards ?? 0}
                             </span>
                           </div>
                           <div className="flex-1 flex items-start space-x-12">
@@ -171,7 +213,23 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                 })}
               </div>
             </Section>
-            <Section heading="My Hand">
+            <Section
+              heading="My Hand"
+              slot={
+                <>
+                  {isCurrentTurn && !hasDrawnCards && (
+                    <button
+                      type="button"
+                      onClick={onClickDrawCards}
+                      disabled={isProcessing}
+                      className="rounded-md bg-green-600 hover:bg-green-600/80 px-4 py-2 text-sm font-semibold text-white border-none disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Draw Cards
+                    </button>
+                  )}
+                </>
+              }
+            >
               <div className="grid grid-cols-7 gap-2">
                 {state.myHand?.map((card, idx) => {
                   return <li key={idx}>{card}</li>;
