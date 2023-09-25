@@ -13,7 +13,7 @@ export type CardType = {
   slug: string;
   name: string;
   description: string;
-  type: string;
+  type: "action" | "money" | "rent" | "wildcard" | "property";
   value: number;
   deck_quantity: number;
   photo: string | null;

@@ -198,6 +198,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@deal/dto':
+        specifier: '*'
+        version: link:../../packages/dto
       '@deal/hooks':
         specifier: '*'
         version: link:../../packages/hooks

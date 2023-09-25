@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@deal/hooks": "*",
+    "@deal/dto": "*",
     "@deal/utils-client": "*",
     "@ebay/nice-modal-react": "^1.2.10",
     "@headlessui/react": "^1.7.17",

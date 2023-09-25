@@ -526,7 +526,7 @@ export class GamesService {
     }
 
     // Make sure this player has this card in their hand
-    const playerHand = params.state.players[params.user_id].hand;
+    const playerHand = params.state.myHand;
 
     if (!playerHand.includes(data.card)) {
       throw new BadRequestException("You don't have that card in your hand.");

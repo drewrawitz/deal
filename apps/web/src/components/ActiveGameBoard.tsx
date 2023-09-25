@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { handleError } from "../utils/shared";
 import { socket } from "../socket";
 import Card from "./Card";
+import { GameActionBodyDto } from "@deal/dto";
 
 interface ActiveGameBoardProps {
   gameId: number;
@@ -90,20 +91,28 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
     };
   }, [currentUser]);
 
-  const onClickDrawCards = async () => {
+  const sendAction = async (body: GameActionBodyDto) => {
     try {
       setProcessing(true);
       await gameActionMutation.mutateAsync({
         game_id: gameId,
-        body: {
-          action: "drawCards",
-        },
+        body,
       });
     } catch (err) {
       handleError(err);
     } finally {
       setProcessing(false);
     }
+  };
+
+  const onClickDrawCards = async () => {
+    return sendAction({
+      action: "drawCards",
+    });
+  };
+
+  const onCardAction = async (body: GameActionBodyDto) => {
+    return sendAction(body);
   };
 
   if (isFetching) {
@@ -131,7 +140,10 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
           <div className="flex items-center justify-center space-x-2">
             {Array.from({ length: 3 }, (_, i) => {
               return state.currentTurn?.actionsTaken > i ? (
-                <span className="block h-5 w-5 rounded-full bg-red-400"></span>
+                <span
+                  key={i}
+                  className="block h-5 w-5 rounded-full bg-red-400"
+                ></span>
               ) : (
                 <span
                   key={i}
@@ -233,6 +245,17 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
             >
               <ul className="grid grid-cols-7 gap-2">
                 {state.myHand?.map((card, idx) => {
+                  return (
+                    <li key={idx}>
+                      <Card card={card} onCardAction={onCardAction} />
+                    </li>
+                  );
+                })}
+              </ul>
+            </Section>
+            <Section heading="My Bank">
+              <ul className="grid grid-cols-7 gap-2">
+                {state.players[currentUser.user_id].bank?.map((card, idx) => {
                   return (
                     <li key={idx}>
                       <Card card={card} />

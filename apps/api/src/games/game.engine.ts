@@ -127,17 +127,18 @@ export class GameEngine {
     this.gameState.players[event.player_id].bank.push(event.data.card);
 
     // Find the index of the first occurrence of the card in the user's hand
-    const cardIndex = this.gameState.players[event.player_id].hand.indexOf(
-      event.data.card,
-    );
+    const cardIndex = this.gameState.myHand.indexOf(event.data.card);
 
     // If the card is found, remove it from the hand
     if (cardIndex !== -1) {
-      this.gameState.players[event.player_id].hand.splice(cardIndex, 1);
+      this.gameState.myHand.splice(cardIndex, 1);
     }
 
     // Increment the number of actions taken
     this.gameState.currentTurn.actionsTaken++;
+
+    // Decrement the number of cards in the player's hand
+    this.gameState.players[event.player_id].numCards--;
   }
 
   private handlePlayEvent(event: PlayEvent) {
