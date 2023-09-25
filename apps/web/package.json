@@ -12,6 +12,7 @@
   "dependencies": {
     "@deal/hooks": "*",
     "@deal/utils-client": "*",
+    "@ebay/nice-modal-react": "^1.2.10",
     "@headlessui/react": "^1.7.17",
     "@tabler/icons-react": "^2.34.0",
     "@tanstack/react-query": "^4.33.0",

@@ -8,6 +8,17 @@ export enum SoundTriggers {
 
 export interface CreateMessageReturn extends Message {}
 
+export type CardType = {
+  id: number;
+  slug: string;
+  name: string;
+  description: string;
+  type: string;
+  value: number;
+  deck_quantity: number;
+  photo: string | null;
+};
+
 export interface LoginParams {
   email: string;
   password: string;

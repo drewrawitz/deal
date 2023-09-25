@@ -204,6 +204,9 @@ importers:
       '@deal/utils-client':
         specifier: '*'
         version: link:../../packages/utils-client
+      '@ebay/nice-modal-react':
+        specifier: ^1.2.10
+        version: 1.2.10(react-dom@18.2.0)(react@18.2.0)
       '@headlessui/react':
         specifier: ^1.7.17
         version: 1.7.17(react-dom@18.2.0)(react@18.2.0)
@@ -913,6 +916,16 @@ packages:
     dependencies:
       postcss-selector-parser: 6.0.13
     dev: true
+
+  /@ebay/nice-modal-react@1.2.10(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-qNp8vQo5kPRwB9bHlkh8lcwH/0KFWpp58X/b9KaLB/gNlJ3W24nCT2l/qBBSnWgV7NEIq25uLowaPS2mbfpZiw==}
+    peerDependencies:
+      react: '>16.8.0'
+      react-dom: '>16.8.0'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
 
   /@esbuild/android-arm64@0.18.20:
     resolution: {integrity: sha512-Nz4rJcchGDtENV0eMKUNa6L12zz2zBDXuhj/Vjh18zGqB44Bi7MBMSXjgunJgjRhCmKOjnPuZp4Mb6OKqtMHLQ==}

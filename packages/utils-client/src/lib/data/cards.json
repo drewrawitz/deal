@@ -1,0 +1,582 @@
+[
+  {
+    "id": 1,
+    "slug": "deal_breaker",
+    "name": "Deal Breaker",
+    "description": "Steal a complete set of properties from any player.",
+    "type": "action",
+    "value": 5,
+    "deck_quantity": 2,
+    "photo": null
+  },
+  {
+    "id": 2,
+    "slug": "debt_collector",
+    "name": "Debt Collector",
+    "description": "Force any player to pay you 5M",
+    "type": "action",
+    "value": 3,
+    "deck_quantity": 3,
+    "photo": null
+  },
+  {
+    "id": 3,
+    "slug": "double_rent",
+    "name": "Double The Rent",
+    "description": "Needs to be played with a rent card.",
+    "type": "action",
+    "value": 1,
+    "deck_quantity": 2,
+    "photo": null
+  },
+  {
+    "id": 6,
+    "slug": "house",
+    "name": "House",
+    "description": "Add onto any full set you own to add 3M to the rent value.",
+    "type": "action",
+    "value": 3,
+    "deck_quantity": 3,
+    "photo": null
+  },
+  {
+    "id": 7,
+    "slug": "birthday",
+    "name": "It's My Birthday",
+    "description": "All players give you 2M as a gift.",
+    "type": "action",
+    "value": 2,
+    "deck_quantity": 3,
+    "photo": null
+  },
+  {
+    "id": 8,
+    "slug": "say_no",
+    "name": "Just Say No",
+    "description": "Use any time when an action card is played against you.",
+    "type": "action",
+    "value": 4,
+    "deck_quantity": 3,
+    "photo": null
+  },
+  {
+    "id": 9,
+    "slug": "pass_go",
+    "name": "Pass Go",
+    "description": "Draw 2 extra cards.",
+    "type": "action",
+    "value": 1,
+    "deck_quantity": 10,
+    "photo": null
+  },
+  {
+    "id": 10,
+    "slug": "sly_deal",
+    "name": "Sly Deal",
+    "description": "Steal a property from the player of your choice.",
+    "type": "action",
+    "value": 3,
+    "deck_quantity": 3,
+    "photo": null
+  },
+  {
+    "id": 11,
+    "slug": "baltic_avenue",
+    "name": "Baltic Avenue",
+    "description": null,
+    "type": "property",
+    "value": 1,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 12,
+    "slug": "mediterranean_avenue",
+    "name": "Mediterranean Avenue",
+    "description": null,
+    "type": "property",
+    "value": 1,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 13,
+    "slug": "boardwalk",
+    "name": "Boardwalk",
+    "description": null,
+    "type": "property",
+    "value": 4,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 14,
+    "slug": "park_place",
+    "name": "Park Place",
+    "description": null,
+    "type": "property",
+    "value": 4,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 15,
+    "slug": "nc_ave",
+    "name": "North Carolina Avenue",
+    "description": null,
+    "type": "property",
+    "value": 4,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 16,
+    "slug": "pacific_ave",
+    "name": "Pacific Avenue",
+    "description": null,
+    "type": "property",
+    "value": 4,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 17,
+    "slug": "pa_ave",
+    "name": "Pennsylvania Avenue",
+    "description": null,
+    "type": "property",
+    "value": 4,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 18,
+    "slug": "con_ave",
+    "name": "Connecticut Avenue",
+    "description": null,
+    "type": "property",
+    "value": 1,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 19,
+    "slug": "oriental_ave",
+    "name": "Oriental Avenue",
+    "description": null,
+    "type": "property",
+    "value": 1,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 20,
+    "slug": "vermont_ave",
+    "name": "Vermont Avenue",
+    "description": null,
+    "type": "property",
+    "value": 1,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 21,
+    "slug": "ny_ave",
+    "name": "New York Avenue",
+    "description": null,
+    "type": "property",
+    "value": 2,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 22,
+    "slug": "st_james_place",
+    "name": "St. James Place",
+    "description": null,
+    "type": "property",
+    "value": 2,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 23,
+    "slug": "ten_ave",
+    "name": "Tennessee Avenue",
+    "description": null,
+    "type": "property",
+    "value": 2,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 24,
+    "slug": "st_charles_place",
+    "name": "St. Charles Place",
+    "description": null,
+    "type": "property",
+    "value": 2,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 25,
+    "slug": "va_ave",
+    "name": "Virginia Avenue",
+    "description": null,
+    "type": "property",
+    "value": 2,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 26,
+    "slug": "states_ave",
+    "name": "States Avenue",
+    "description": null,
+    "type": "property",
+    "value": 2,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 27,
+    "slug": "short_line",
+    "name": "Short Line",
+    "description": null,
+    "type": "property",
+    "value": 2,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 28,
+    "slug": "bo_railroad",
+    "name": "B. & O. Railroad",
+    "description": null,
+    "type": "property",
+    "value": 2,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 29,
+    "slug": "reading_railroad",
+    "name": "Reading Railroad",
+    "description": null,
+    "type": "property",
+    "value": 2,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 30,
+    "slug": "pa_railroad",
+    "name": "Pennsylvania Railroad",
+    "description": null,
+    "type": "property",
+    "value": 2,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 31,
+    "slug": "ken_ave",
+    "name": "Kentucky Avenue",
+    "description": null,
+    "type": "property",
+    "value": 3,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 32,
+    "slug": "ind_ave",
+    "name": "Indiana Avenue",
+    "description": null,
+    "type": "property",
+    "value": 3,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 33,
+    "slug": "il_ave",
+    "name": "Illinois Avenue",
+    "description": null,
+    "type": "property",
+    "value": 3,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 34,
+    "slug": "water_works",
+    "name": "Water Works",
+    "description": null,
+    "type": "property",
+    "value": 2,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 35,
+    "slug": "electric_company",
+    "name": "Electric Company",
+    "description": null,
+    "type": "property",
+    "value": 2,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 36,
+    "slug": "vent_ave",
+    "name": "Ventnor Avenue",
+    "description": null,
+    "type": "property",
+    "value": 3,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 37,
+    "slug": "marvin_gardens",
+    "name": "Marvin Gardens",
+    "description": null,
+    "type": "property",
+    "value": 3,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 38,
+    "slug": "atlantic_ave",
+    "name": "Atlantic Avenue",
+    "description": null,
+    "type": "property",
+    "value": 3,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 5,
+    "slug": "hotel",
+    "name": "Hotel",
+    "description": "Add onto any full set you own to add 4M to the rent value.",
+    "type": "action",
+    "value": 4,
+    "deck_quantity": 2,
+    "photo": null
+  },
+  {
+    "id": 39,
+    "slug": "wc_db_g",
+    "name": "Dark Blue and Green Wildcard",
+    "description": null,
+    "type": "wildcard",
+    "value": 4,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 40,
+    "slug": "wc_lb_b",
+    "name": "Light Blue and Brown Wildcard",
+    "description": null,
+    "type": "wildcard",
+    "value": 1,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 41,
+    "slug": "wc_all",
+    "name": "Multi-color Wildcard",
+    "description": null,
+    "type": "wildcard",
+    "value": 0,
+    "deck_quantity": 2,
+    "photo": null
+  },
+  {
+    "id": 43,
+    "slug": "wc_g_rr",
+    "name": "Green and Railroad Wildcard",
+    "description": null,
+    "type": "wildcard",
+    "value": 4,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 44,
+    "slug": "wc_lb_rr",
+    "name": "Light Blue and Railroad Wildcard",
+    "description": null,
+    "type": "wildcard",
+    "value": 4,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 45,
+    "slug": "wc_u_rr",
+    "name": "Utility and Railroad Wildcard",
+    "description": null,
+    "type": "wildcard",
+    "value": 2,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 46,
+    "slug": "wc_r_y",
+    "name": "Red and Yellow Wildcard",
+    "description": null,
+    "type": "wildcard",
+    "value": 3,
+    "deck_quantity": 2,
+    "photo": null
+  },
+  {
+    "id": 42,
+    "slug": "wc_p_o",
+    "name": "Pink and Orange Wildcard",
+    "description": null,
+    "type": "wildcard",
+    "value": 2,
+    "deck_quantity": 2,
+    "photo": null
+  },
+  {
+    "id": 47,
+    "slug": "rent_all",
+    "name": "Wild Rent",
+    "description": "Force one player to pay you rent for properties you own in one of these colors.",
+    "type": "rent",
+    "value": 3,
+    "deck_quantity": 3,
+    "photo": null
+  },
+  {
+    "id": 48,
+    "slug": "rent_db_g",
+    "name": "Blue and Green Rent",
+    "description": "All players pay you rent for properties you own in one of these colors.",
+    "type": "rent",
+    "value": 1,
+    "deck_quantity": 2,
+    "photo": null
+  },
+  {
+    "id": 49,
+    "slug": "rent_b_lb",
+    "name": "Brown and Light Blue Rent",
+    "description": "All players pay you rent for properties you own in one of these colors.",
+    "type": "rent",
+    "value": 1,
+    "deck_quantity": 2,
+    "photo": null
+  },
+  {
+    "id": 50,
+    "slug": "rent_p_o",
+    "name": "Pink and Orange Rent",
+    "description": "All players pay you rent for properties you own in one of these colors.",
+    "type": "rent",
+    "value": 1,
+    "deck_quantity": 2,
+    "photo": null
+  },
+  {
+    "id": 51,
+    "slug": "rent_rr_u",
+    "name": "Railroad and Utility Rent",
+    "description": "All players pay you rent for properties you own in one of these colors.",
+    "type": "rent",
+    "value": 1,
+    "deck_quantity": 2,
+    "photo": null
+  },
+  {
+    "id": 52,
+    "slug": "rent_r_y",
+    "name": "Red and Yellow Rent",
+    "description": "All players pay you rent for properties you own in one of these colors.",
+    "type": "rent",
+    "value": 1,
+    "deck_quantity": 2,
+    "photo": null
+  },
+  {
+    "id": 53,
+    "slug": "10m",
+    "name": "10M",
+    "description": null,
+    "type": "money",
+    "value": 10,
+    "deck_quantity": 1,
+    "photo": null
+  },
+  {
+    "id": 54,
+    "slug": "1m",
+    "name": "1M",
+    "description": null,
+    "type": "money",
+    "value": 1,
+    "deck_quantity": 6,
+    "photo": null
+  },
+  {
+    "id": 55,
+    "slug": "2m",
+    "name": "2M",
+    "description": null,
+    "type": "money",
+    "value": 2,
+    "deck_quantity": 5,
+    "photo": null
+  },
+  {
+    "id": 56,
+    "slug": "3m",
+    "name": "3M",
+    "description": null,
+    "type": "money",
+    "value": 3,
+    "deck_quantity": 3,
+    "photo": null
+  },
+  {
+    "id": 57,
+    "slug": "4m",
+    "name": "4M",
+    "description": null,
+    "type": "money",
+    "value": 4,
+    "deck_quantity": 3,
+    "photo": null
+  },
+  {
+    "id": 58,
+    "slug": "5m",
+    "name": "5M",
+    "description": null,
+    "type": "money",
+    "value": 5,
+    "deck_quantity": 2,
+    "photo": null
+  },
+  {
+    "id": 4,
+    "slug": "forced_deal",
+    "name": "Forced Deal",
+    "description": "Swap any property with another player.",
+    "type": "action",
+    "value": 3,
+    "deck_quantity": 3,
+    "photo": null
+  }
+]

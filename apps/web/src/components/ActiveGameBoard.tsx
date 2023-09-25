@@ -11,6 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import { handleError } from "../utils/shared";
 import { socket } from "../socket";
+import Card from "./Card";
 
 interface ActiveGameBoardProps {
   gameId: number;
@@ -230,16 +231,15 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                 </>
               }
             >
-              <div className="grid grid-cols-7 gap-2">
+              <ul className="grid grid-cols-7 gap-2">
                 {state.myHand?.map((card, idx) => {
-                  return <li key={idx}>{card}</li>;
+                  return (
+                    <li key={idx}>
+                      <Card card={card} />
+                    </li>
+                  );
                 })}
-                {/* // <img src="/red-property-card.jpeg" />
-                // <img src="/brown-property-card.jpeg" />
-                // <img src="/5m.jpeg" />
-                // <img src="/rent-wild.jpeg" />
-                // <img src="/prop-wild.jpeg" /> */}
-              </div>
+              </ul>
             </Section>
           </div>
         </div>
