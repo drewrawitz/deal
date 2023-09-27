@@ -1,6 +1,7 @@
 import { Cards, Properties } from '@deal/models';
 import {
   BankEvent,
+  CardType,
   DealEvent,
   DealToPlayer,
   DrawEvent,
@@ -22,7 +23,7 @@ export class GameEngine {
     this.gameState = initialState;
   }
 
-  private getCardById(card_id: number) {
+  private getCardById(card_id: number): CardType | undefined {
     return this.cards.find((card) => card.id === card_id);
   }
 
@@ -126,19 +127,36 @@ export class GameEngine {
     // Add the card to the bank pile
     this.gameState.players[event.player_id].bank.push(event.data.card);
 
+    // Remove from hand
+    this.removeCardFromHand(event.data.card, event.player_id);
+
+    // Increment the number of actions taken
+    this.gameState.currentTurn.actionsTaken++;
+  }
+
+  private handleActionCards(card: CardType, event: PlayEvent) {
+    switch (card.slug) {
+      case 'pass_go':
+        const CARDS_TO_DRAW = 2;
+        const cardsDrawn = this.gameState.deck.splice(0, CARDS_TO_DRAW);
+
+        this.gameState.myHand.push(...cardsDrawn);
+        this.gameState.players[event.player_id].numCards += CARDS_TO_DRAW;
+        break;
+    }
+  }
+
+  private removeCardFromHand(cardId: number, playerId: string) {
     // Find the index of the first occurrence of the card in the user's hand
-    const cardIndex = this.gameState.myHand.indexOf(event.data.card);
+    const cardIndex = this.gameState.myHand.indexOf(cardId);
 
     // If the card is found, remove it from the hand
     if (cardIndex !== -1) {
       this.gameState.myHand.splice(cardIndex, 1);
     }
 
-    // Increment the number of actions taken
-    this.gameState.currentTurn.actionsTaken++;
-
     // Decrement the number of cards in the player's hand
-    this.gameState.players[event.player_id].numCards--;
+    this.gameState.players[playerId].numCards--;
   }
 
   private handlePlayEvent(event: PlayEvent) {
@@ -157,10 +175,19 @@ export class GameEngine {
       });
     }
 
-    this.calculateSets(event.player_id);
+    // Handle individual cards
+    this.handleActionCards(card, event);
 
     // Increment the number of actions taken
     this.gameState.currentTurn.actionsTaken++;
+
+    // Remove from hand
+    this.removeCardFromHand(event.data.card, event.player_id);
+
+    // Add the card to the discard pile
+    this.gameState.discardPile.push(event.data.card);
+
+    this.calculateSets(event.player_id);
   }
 
   // Public method to apply an event

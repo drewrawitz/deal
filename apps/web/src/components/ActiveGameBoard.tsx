@@ -253,17 +253,19 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                 })}
               </ul>
             </Section>
-            <Section heading="My Bank">
-              <ul className="grid grid-cols-7 gap-2">
-                {state.players[currentUser.user_id].bank?.map((card, idx) => {
-                  return (
-                    <li key={idx}>
-                      <Card card={card} />
-                    </li>
-                  );
-                })}
-              </ul>
-            </Section>
+            {currentUser && (
+              <Section heading="My Bank">
+                <ul className="grid grid-cols-7 gap-2">
+                  {state.players[currentUser.user_id].bank?.map((card, idx) => {
+                    return (
+                      <li key={idx}>
+                        <Card card={card} />
+                      </li>
+                    );
+                  })}
+                </ul>
+              </Section>
+            )}
           </div>
         </div>
 

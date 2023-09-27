@@ -18,8 +18,23 @@ const Card: React.FC<CardProps> = ({ card, onCardAction }) => {
     return;
   }
 
+  const onPlayAction = (card: CardType) => {
+    if (!onCardAction) return;
+
+    onCardAction({
+      action: "placeCard",
+      data: {
+        card: card.id,
+        placement: "board",
+      },
+    });
+  };
+
   const showActionModal = () => {
-    NiceModal.show(CardActionModal, { card: data });
+    NiceModal.show(CardActionModal, {
+      card: data,
+      onPlayAction,
+    });
   };
 
   const onClickCard = () => {
