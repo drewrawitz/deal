@@ -72,7 +72,7 @@ interface ActiveGameBoardProps {
 
 export default function ActiveGameBoard(props: ActiveGameBoardProps) {
   const { gameId } = props;
-  const { data: state, refetch, isFetching } = useGameStateQuery(gameId);
+  const { data: state, refetch, isInitialLoading } = useGameStateQuery(gameId);
   const { data: currentUser } = useAuthQuery();
   const { gameActionMutation } = useGamesMutations();
   const [isProcessing, setProcessing] = useState(false);
@@ -115,7 +115,7 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
     return sendAction(body);
   };
 
-  if (isFetching) {
+  if (isInitialLoading) {
     return <Layout heading="Loading...">&nbsp;</Layout>;
   }
 

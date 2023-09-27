@@ -34,6 +34,7 @@ export function useGameStateQuery(game_id: number) {
     queryKey: ["game", game_id, "state"],
     queryFn: () => Api.Games.state(game_id),
     staleTime: 1000 * 60 * 60, // 1 hour
+    keepPreviousData: true,
   });
 }
 

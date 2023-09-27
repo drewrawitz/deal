@@ -5,10 +5,11 @@ import BaseModal from "./BaseModal";
 interface CardActionModalProps {
   card: CardType;
   onPlayAction: (card: CardType) => void;
+  onAddToBank: (card: CardType) => void;
 }
 
 const CardActionModal = NiceModal.create(
-  ({ card, onPlayAction }: CardActionModalProps) => {
+  ({ card, onPlayAction, onAddToBank }: CardActionModalProps) => {
     const modal = useModal();
 
     const onClose = () => {
@@ -22,6 +23,11 @@ const CardActionModal = NiceModal.create(
 
     const playAction = () => {
       onPlayAction(card);
+      onClose();
+    };
+
+    const addToBank = () => {
+      onAddToBank(card);
       onClose();
     };
 
@@ -45,6 +51,7 @@ const CardActionModal = NiceModal.create(
           <span className="block text-center text-sm my-2">or</span>
           <button
             type="button"
+            onClick={addToBank}
             className="rounded-md w-full bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
           >
             Add to Bank (${card.value}M)
