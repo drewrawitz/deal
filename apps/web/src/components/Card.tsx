@@ -1,5 +1,5 @@
 import NiceModal from "@ebay/nice-modal-react";
-import { Cards } from "@deal/utils-client";
+import { Cards, classNames } from "@deal/utils-client";
 import { GameActionBodyDto } from "@deal/dto";
 import React from "react";
 import CardActionModal from "./modals/CardActionModal";
@@ -7,10 +7,15 @@ import { CardType } from "@deal/types";
 
 interface CardProps {
   card: number;
+  display?: "set" | "default";
   onCardAction?: (data: GameActionBodyDto) => void;
 }
 
-const Card: React.FC<CardProps> = ({ card, onCardAction }) => {
+const Card: React.FC<CardProps> = ({
+  card,
+  display = "default",
+  onCardAction,
+}) => {
   const data = Cards.find((c) => c.id === card) as CardType;
 
   if (!data) {
@@ -68,7 +73,10 @@ const Card: React.FC<CardProps> = ({ card, onCardAction }) => {
 
   return (
     <button onClick={onClickCard}>
-      <img src={`/cards/${card}.jpeg`} />
+      <img
+        src={`/cards/${card}.jpeg`}
+        className={classNames(display === "set" && "max-w-[50px]")}
+      />
     </button>
   );
 };

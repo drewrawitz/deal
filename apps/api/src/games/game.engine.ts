@@ -168,11 +168,15 @@ export class GameEngine {
 
     if (['property', 'wildcard'].includes(card.type)) {
       const color = this.getPropertyColor(card.id) ?? event.data.color;
+      console.log('get color', color);
 
       this.gameState.players[event.player_id].board.push({
         color,
         card: card.id,
       });
+    } else {
+      // Add the card to the discard pile
+      this.gameState.discardPile.push(event.data.card);
     }
 
     // Handle individual cards
@@ -184,9 +188,7 @@ export class GameEngine {
     // Remove from hand
     this.removeCardFromHand(event.data.card, event.player_id);
 
-    // Add the card to the discard pile
-    this.gameState.discardPile.push(event.data.card);
-
+    // Calculate if a player has formed a set
     this.calculateSets(event.player_id);
   }
 

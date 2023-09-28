@@ -1,4 +1,4 @@
-import { classNames, getAvatarUrl } from "@deal/utils-client";
+import { classNames, getAvatarUrl, groupByColor } from "@deal/utils-client";
 import Activity from "./Activity";
 import Layout from "../Layout";
 import Section from "./Section";
@@ -164,6 +164,7 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                   const isCurrentPlayer =
                     state.currentTurn?.username === player.username;
                   const bankTotal = 0;
+                  const sets = groupByColor(player.board);
 
                   return (
                     <div key={player.username}>
@@ -192,32 +193,31 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                             </span>
                           </div>
                           <div className="flex-1 flex items-start space-x-12">
-                            {/* {player.sets?.map((set, idx) => {
+                            {sets?.map((set, idx) => {
                               return (
                                 <div
                                   className={classNames(
                                     "flex p-1",
-                                    set?.[0]?.color === "brown"
-                                      ? "bg-[#81471D]"
-                                      : "",
-                                    set?.[0]?.color === "red"
-                                      ? "bg-[#CE0F12]"
-                                      : ""
+                                    set?.[0]?.color === "railroad" &&
+                                      "bg-black",
+                                    set?.[0]?.color === "brown" &&
+                                      "bg-[#81471D]",
+                                    set?.[0]?.color === "red" && "bg-[#CE0F12]"
                                   )}
                                   key={`${player.username}-${idx}`}
                                 >
                                   {set.map((card, idx2) => {
                                     return (
-                                      <img
+                                      <Card
                                         key={idx2}
-                                        src={card.image}
-                                        className="max-w-[50px]"
+                                        card={card.card}
+                                        display="set"
                                       />
                                     );
                                   })}
                                 </div>
                               );
-                            })} */}
+                            })}
                           </div>
                         </div>
                       </div>

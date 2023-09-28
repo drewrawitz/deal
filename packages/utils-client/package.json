@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@deal/eslint-config-custom": "*",
+    "@deal/types": "*",
     "@deal/tsconfig": "*",
     "tsup": "^7.1.0",
     "typescript": "5.0.4"

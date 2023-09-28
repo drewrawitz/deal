@@ -143,7 +143,7 @@ type SpecificGameEvent =
 export type TypedGameEvent = Omit<GameEvents, "data" | "event_type"> &
   SpecificGameEvent;
 
-type GameProperties = {
+export type GameProperties = {
   color: string;
   card: number;
 };

@@ -458,6 +458,9 @@ importers:
       '@deal/tsconfig':
         specifier: '*'
         version: link:../tsconfig
+      '@deal/types':
+        specifier: '*'
+        version: link:../types
       tsup:
         specifier: ^7.1.0
         version: 7.1.0(typescript@5.0.4)
