@@ -33,7 +33,7 @@ export function useAuthMutations() {
 
   const logoutMutation = useMutation(() => Api.Auth.logout(), {
     onSuccess: () => {
-      queryClient.invalidateQueries(["me"]);
+      queryClient.removeQueries();
     },
   });
 
