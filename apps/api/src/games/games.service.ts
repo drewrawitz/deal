@@ -487,7 +487,7 @@ export class GamesService {
 
   async handleEndTurnAction(params: HandleActionParams) {
     const { game_id, user_id, state } = params;
-    const playerHand = state.players[params.user_id].hand;
+    const playerHand = state.myHand;
 
     if (playerHand.length > 7) {
       throw new BadRequestException(

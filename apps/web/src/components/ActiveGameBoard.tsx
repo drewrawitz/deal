@@ -111,6 +111,12 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
     });
   };
 
+  const onClickEndTurn = async () => {
+    return sendAction({
+      action: "endTurn",
+    });
+  };
+
   const onCardAction = async (body: GameActionBodyDto) => {
     return sendAction(body);
   };
@@ -238,6 +244,16 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                       className="rounded-md bg-green-600 hover:bg-green-600/80 px-4 py-2 text-sm font-semibold text-white border-none disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Draw Cards
+                    </button>
+                  )}
+                  {isCurrentTurn && hasDrawnCards && (
+                    <button
+                      type="button"
+                      onClick={onClickEndTurn}
+                      disabled={isProcessing}
+                      className="rounded-md bg-red-600 hover:bg-red-600/80 px-4 py-2 text-sm font-semibold text-white border-none disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      End Turn
                     </button>
                   )}
                 </>
