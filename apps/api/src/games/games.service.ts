@@ -514,7 +514,7 @@ export class GamesService {
     body: GameActionBodyDto,
   ) {
     const { game_id, user_id, state } = params;
-    const { data } = body;
+    const { data, action } = body;
 
     // Make sure the right data is provided
     if (!data?.card) {
@@ -534,7 +534,9 @@ export class GamesService {
 
     if (!state.currentTurn.hasDrawnCards) {
       throw new BadRequestException(
-        'You must draw cards before ending your turn.',
+        action === 'endTurn'
+          ? 'You must draw cards before ending your turn.'
+          : 'You must draw cards before placing cards',
       );
     }
 
