@@ -38,6 +38,15 @@ export function useGameStateQuery(game_id: number) {
   });
 }
 
+export function useGameActivityQuery(game_id: number) {
+  return useQuery({
+    queryKey: ["game", game_id, "activity"],
+    queryFn: () => Api.Games.activity(game_id),
+    staleTime: 1000 * 60 * 60, // 1 hour
+    keepPreviousData: true,
+  });
+}
+
 export function useGamesMutations() {
   const queryClient = useQueryClient();
 

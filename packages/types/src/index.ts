@@ -143,6 +143,14 @@ type SpecificGameEvent =
 export type TypedGameEvent = Omit<GameEvents, "data" | "event_type"> &
   SpecificGameEvent;
 
+export type GameActivityResponse = {
+  sequence: number;
+  player_id: string | null;
+  username: string | null;
+  action: string;
+  card: number | null;
+};
+
 export type GameProperties = {
   color: string;
   card: number;

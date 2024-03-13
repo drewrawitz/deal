@@ -90,4 +90,10 @@ export class GamesController {
   ) {
     return this.gamesService.getGameState(req.user, params.game_id);
   }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('/:game_id/events')
+  async getGameEvents(@Param() params: GameIdParamDto) {
+    return this.gamesService.getGameEvents(params.game_id);
+  }
 }

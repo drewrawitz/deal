@@ -10,6 +10,7 @@ import {
   GameState,
   TypedGameEvent,
   LeaveGameResponse,
+  GameActivityResponse,
 } from '@deal/types';
 import { Game, GameEvents, GamePlayers } from '@deal/models';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -615,5 +616,23 @@ export class GamesService {
     this.gamesGateway.broadcastMessage(`game.${game_id}.action`);
 
     return this.gameEngine.state;
+  }
+
+  async getGameEvents(game_id: number): Promise<GameActivityResponse[]> {
+    const data = await this.eventsRepo.find({
+      where: { game_id },
+      relations: {
+        player: true,
+      },
+      order: { sequence: 'ASC' },
+    });
+
+    return data.map((d) => ({
+      sequence: d.sequence,
+      player_id: d.player_id,
+      username: d.player?.username ?? null,
+      action: d.event_type,
+      card: (d.data?.card as number) ?? null,
+    }));
   }
 }
