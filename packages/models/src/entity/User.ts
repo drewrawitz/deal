@@ -1,5 +1,5 @@
 import { Entity, Column, BeforeInsert, OneToMany } from "typeorm";
-import { generateEntityId } from "@deal/utils-client";
+import { generateEntityId } from "../utils";
 import { SoftDeletableEntity } from "../interfaces/soft-deletable.entity";
 import { GamePlayers } from "./GamePlayers";
 import { Game } from "./Game";

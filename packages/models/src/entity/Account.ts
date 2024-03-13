@@ -7,7 +7,7 @@ import {
   Column,
   BeforeInsert,
 } from "typeorm";
-import { generateEntityId } from "@deal/utils-client";
+import { generateEntityId } from "../utils";
 import { SoftDeletableEntity } from "../interfaces/soft-deletable.entity";
 import { User } from "./User";
 
