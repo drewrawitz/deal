@@ -96,6 +96,7 @@ export class GameEngine {
           board: [],
           sets: [],
           numCards: NUM_CARDS,
+          bankValue: 0,
         };
       }
     }
@@ -123,9 +124,15 @@ export class GameEngine {
     this.gameState.currentTurn.hasDrawnCards = true;
   }
 
-  private handleBankEvent(event: BankEvent) {
+  private addCardToBank(event: BankEvent) {
     // Add the card to the bank pile
     this.gameState.players[event.player_id].bank.push(event.data.card);
+    this.gameState.players[event.player_id].bankValue += event.data.value;
+  }
+
+  private handleBankEvent(event: BankEvent) {
+    // Add the card to the bank and calculate the value
+    this.addCardToBank(event);
 
     // Remove from hand
     this.removeCardFromHand(event.data.card, event.player_id);

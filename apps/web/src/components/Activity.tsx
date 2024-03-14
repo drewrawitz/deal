@@ -34,7 +34,7 @@ export default function Activity() {
       if (scrollRef.current) {
         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
       }
-    }, 0);
+    }, 100);
   }, [filteredActivity.length]);
 
   return (

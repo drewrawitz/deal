@@ -119,7 +119,7 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                 {Object.values(state.players).map((player) => {
                   const isCurrentPlayer =
                     state.currentTurn?.username === player.username;
-                  const bankTotal = 0;
+                  const bankTotal = player.bankValue;
                   const sets = groupByColor(player.board);
 
                   return (
@@ -220,7 +220,11 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
               </ul>
             </Section>
             {currentUser && (
-              <Section heading="My Bank">
+              <Section
+                heading={`My Bank (${
+                  state.players[currentUser.user_id].bankValue
+                }M)`}
+              >
                 <ul className="grid grid-cols-7 gap-2">
                   {state.players[currentUser.user_id].bank?.map((card, idx) => {
                     return (
