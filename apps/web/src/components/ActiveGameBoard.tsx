@@ -85,6 +85,7 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
   const { hasDrawnCards, actionsTaken } = state.currentTurn;
   const hasTooManyCards = isCurrentTurn && state.myHand.length > 7;
   const mustDiscard = hasTooManyCards && actionsTaken === MAX_ACTIONS;
+  const deckLength = state.deck.length;
 
   return (
     <Layout
@@ -93,8 +94,8 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
         <div className="flex items-center space-x-6">
           <div className="relative max-w-[70px]">
             <img src={`/cards/back.jpg`} />
-            <span className="absolute bottom-0 left-0 text-center w-full bg-black bg-opacity-50 text-white font-medium">
-              96
+            <span className="absolute bottom-0 left-0 text-center w-full bg-black bg-opacity-70 text-white font-semibold text-sm">
+              {deckLength}
             </span>
           </div>
           {state.discardPile.length > 0 && (
