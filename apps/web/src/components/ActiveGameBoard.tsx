@@ -18,58 +18,6 @@ interface ActiveGameBoardProps {
   gameId: number;
 }
 
-// const players = [
-//   {
-//     username: "defekt7x",
-//     hand: 3,
-//     bank: 5,
-//     isCurrentPlayer: true,
-//     sets: [
-//       [
-//         {
-//           color: "brown",
-//           image: "/brown-property-card.jpeg",
-//           card: 1,
-//         },
-//         {
-//           color: "brown",
-//           image: "/brown-property-card.jpeg",
-//           card: 1,
-//         },
-//       ],
-//       [
-//         {
-//           color: "red",
-//           image: "/red-property-card.jpeg",
-//           card: 1,
-//         },
-//         {
-//           color: "red",
-//           image: "/red-property-card.jpeg",
-//           card: 1,
-//         },
-//         {
-//           color: "red",
-//           image: "/prop-wild.jpeg",
-//           card: 1,
-//         },
-//       ],
-//     ],
-//   },
-//   {
-//     username: "kimmy1285",
-//     hand: 6,
-//     bank: 2,
-//     isCurrentPlayer: false,
-//   },
-//   {
-//     username: "DASdealer",
-//     hand: 7,
-//     bank: 0,
-//     isCurrentPlayer: false,
-//   },
-// ];
-
 export default function ActiveGameBoard(props: ActiveGameBoardProps) {
   const { gameId } = props;
   const { data: state, refetch, isInitialLoading } = useGameStateQuery(gameId);

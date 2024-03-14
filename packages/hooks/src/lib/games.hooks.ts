@@ -101,6 +101,7 @@ export function useGamesMutations() {
     {
       onSuccess: (_, params) => {
         queryClient.invalidateQueries(["game", params.game_id, "state"]);
+        queryClient.invalidateQueries(["game", params.game_id, "activity"]);
       },
     }
   );

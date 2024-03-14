@@ -148,7 +148,7 @@ export type GameActivityResponse = {
   player_id: string | null;
   username: string | null;
   action: string;
-  card: number | null;
+  data: Record<string, any>;
 };
 
 export type GameProperties = {

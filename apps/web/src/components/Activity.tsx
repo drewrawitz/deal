@@ -1,66 +1,42 @@
 import { classNames } from "@deal/utils-client";
-
-const activity = [
-  {
-    id: 1,
-    username: "defekt7x",
-    action: "draws 2 cards",
-  },
-  {
-    id: 2,
-    username: "defekt7x",
-    action: "banks",
-    image: "/5m.jpeg",
-  },
-  {
-    id: 3,
-    username: "defekt7x",
-    action: "ends turn",
-  },
-  {
-    id: 4,
-    username: "kimmy1285",
-    action: "draws 2 cards",
-  },
-  {
-    id: 5,
-    username: "kimmy1285",
-    action: "plays card",
-    image: "/prop-wild.jpeg",
-  },
-  {
-    id: 6,
-    username: "kimmy1285",
-    action: "plays card",
-    image: "/red-property-card.jpeg",
-  },
-  {
-    id: 7,
-    username: "kimmy1285",
-    action: "charges defekt7x 2M",
-    image: "/rent-wild.jpeg",
-  },
-  {
-    id: 8,
-    username: "defekt7x",
-    action: "pays with",
-    image: "/5m.jpeg",
-  },
-  {
-    id: 9,
-    username: "kimmy1285",
-    action: "ends turn",
-  },
-];
+import { useGameActivityQuery } from "@deal/hooks";
+import { useMemo } from "react";
+import type { GameActivityResponse } from "@deal/types";
 
 export default function Activity() {
+  const gameId = 34;
+  const { data: activity } = useGameActivityQuery(gameId);
+
+  const filteredActivity = useMemo(
+    () =>
+      activity?.filter(
+        (a) => !["shuffle", "deal", "playerTurn"].includes(a.action)
+      ) ?? [],
+    [activity]
+  );
+
+  const descriptions = (activity: GameActivityResponse) => {
+    const mapping: Record<string, string> = {
+      bank: `banks a card (${activity.data?.value}M)`,
+      draw: `draws ${activity.data?.cardsDrawn} cards`,
+      end: `ends turn`,
+      play: `plays a card`,
+    };
+
+    const defaultDescription = activity.action;
+
+    return mapping[activity.action] || defaultDescription;
+  };
+
   return (
     <ul role="list" className="space-y-6">
-      {activity.map((activityItem, activityItemIdx) => (
-        <li key={activityItem.id} className="relative flex gap-x-4">
+      {filteredActivity.map((activityItem, activityItemIdx) => (
+        <li key={activityItem.sequence} className="relative flex gap-x-4">
           <div
             className={classNames(
-              activityItemIdx === activity.length - 1 ? "h-6" : "-bottom-6",
+              activityItemIdx === filteredActivity.length - 1
+                ? "h-6"
+                : "-bottom-6",
               "absolute left-0 top-0 flex w-6 justify-center"
             )}
           >
@@ -77,11 +53,14 @@ export default function Activity() {
               <span className="font-medium text-gray-900">
                 {activityItem.username}
               </span>{" "}
-              {activityItem.action}
+              {descriptions(activityItem)}
             </div>
 
-            {activityItem.image && (
-              <img src={activityItem.image} className="max-w-[40px] mt-2" />
+            {activityItem.data?.card && (
+              <img
+                src={`/cards/${activityItem.data?.card}.jpeg`}
+                className="max-w-[40px] mt-2"
+              />
             )}
           </div>
         </li>

@@ -92,8 +92,8 @@ export class GamesController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Get('/:game_id/events')
-  async getGameEvents(@Param() params: GameIdParamDto) {
-    return this.gamesService.getGameEvents(params.game_id);
+  @Get('/:game_id/activity')
+  async getGameActivity(@Param() params: GameIdParamDto) {
+    return this.gamesService.getGameActivity(params.game_id);
   }
 }

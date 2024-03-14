@@ -618,7 +618,7 @@ export class GamesService {
     return this.gameEngine.state;
   }
 
-  async getGameEvents(game_id: number): Promise<GameActivityResponse[]> {
+  async getGameActivity(game_id: number): Promise<GameActivityResponse[]> {
     const data = await this.eventsRepo.find({
       where: { game_id },
       relations: {
@@ -632,7 +632,17 @@ export class GamesService {
       player_id: d.player_id,
       username: d.player?.username ?? null,
       action: d.event_type,
-      card: (d.data?.card as number) ?? null,
+      data: {
+        ...(d.data?.card && {
+          card: d.data.card,
+        }),
+        ...(d.data?.value && {
+          value: d.data.value,
+        }),
+        ...(d.data?.cardsDrawn && {
+          cardsDrawn: (d.data.cardsDrawn as []).length,
+        }),
+      },
     }));
   }
 }
