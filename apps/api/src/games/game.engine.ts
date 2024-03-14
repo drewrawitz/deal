@@ -29,8 +29,10 @@ export class GameEngine {
   }
 
   private getPropertyColor(card_id: number) {
-    const find = this.properties.find((property) =>
-      property.cards.includes(card_id),
+    const find = this.properties.find(
+      (property) =>
+        property.cards.includes(card_id) ||
+        property.wildcards.includes(card_id),
     );
 
     return find?.color;

@@ -172,6 +172,18 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                                 <div
                                   className={classNames(
                                     "flex p-1",
+                                    set?.[0]?.color === "green" &&
+                                      "bg-[#50B636]",
+                                    set?.[0]?.color === "yellow" &&
+                                      "bg-[#FEF200]",
+                                    set?.[0]?.color === "light_blue" &&
+                                      "bg-[#B6D6ED]",
+                                    set?.[0]?.color === "blue" &&
+                                      "bg-[#415CA1]",
+                                    set?.[0]?.color === "pink" &&
+                                      "bg-[#BD2978]",
+                                    set?.[0]?.color === "orange" &&
+                                      "bg-[#F09706]",
                                     set?.[0]?.color === "railroad" &&
                                       "bg-black",
                                     set?.[0]?.color === "brown" &&
