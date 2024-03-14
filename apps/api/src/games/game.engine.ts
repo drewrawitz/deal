@@ -140,19 +140,24 @@ export class GameEngine {
         const CARDS_TO_DRAW = 2;
         const cardsDrawn = this.gameState.deck.splice(0, CARDS_TO_DRAW);
 
-        this.gameState.myHand.push(...cardsDrawn);
+        if (event.player_id === this.currentUserId) {
+          this.gameState.myHand.push(...cardsDrawn);
+        }
+
         this.gameState.players[event.player_id].numCards += CARDS_TO_DRAW;
         break;
     }
   }
 
   private removeCardFromHand(cardId: number, playerId: string) {
-    // Find the index of the first occurrence of the card in the user's hand
-    const cardIndex = this.gameState.myHand.indexOf(cardId);
+    if (playerId === this.currentUserId) {
+      // Find the index of the first occurrence of the card in the user's hand
+      const cardIndex = this.gameState.myHand.indexOf(cardId);
 
-    // If the card is found, remove it from the hand
-    if (cardIndex !== -1) {
-      this.gameState.myHand.splice(cardIndex, 1);
+      // If the card is found, remove it from the hand
+      if (cardIndex !== -1) {
+        this.gameState.myHand.splice(cardIndex, 1);
+      }
     }
 
     // Decrement the number of cards in the player's hand
