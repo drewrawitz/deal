@@ -32,7 +32,7 @@ export class ChatService {
       ])
       .limit(take)
       .offset(skip)
-      .orderBy('message.created_at', 'DESC');
+      .orderBy('message.created_at', 'ASC');
 
     if (query.game_id) {
       qb.andWhere('game.id = :game_id', { game_id });
