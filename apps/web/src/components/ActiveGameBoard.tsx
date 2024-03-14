@@ -13,6 +13,7 @@ import { handleError } from "../utils/shared";
 import { socket } from "../socket";
 import Card from "./Card";
 import { GameActionBodyDto } from "@deal/dto";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ActiveGameBoardProps {
   gameId: number;
@@ -20,7 +21,8 @@ interface ActiveGameBoardProps {
 
 export default function ActiveGameBoard(props: ActiveGameBoardProps) {
   const { gameId } = props;
-  const { data: state, refetch, isInitialLoading } = useGameStateQuery(gameId);
+  const queryClient = useQueryClient();
+  const { data: state, isInitialLoading } = useGameStateQuery(gameId);
   const { data: currentUser } = useAuthQuery();
   const { gameActionMutation } = useGamesMutations();
   const [isProcessing, setProcessing] = useState(false);
@@ -29,7 +31,7 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
     const channel_action = `game.${gameId}.action`;
 
     function onGameAction() {
-      refetch();
+      queryClient.invalidateQueries(["game", gameId]);
     }
 
     socket.on(channel_action, onGameAction);
@@ -235,9 +237,7 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
 
         <div className="grid grid-cols-1 gap-4">
           <Section heading="Match History">
-            <div className="max-h-[500px] overflow-y-scroll p-1">
-              <Activity />
-            </div>
+            <Activity />
           </Section>
           <Section heading="Match Chat">
             <Chat gameId={gameId} />
