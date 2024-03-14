@@ -22,6 +22,7 @@ export default function Activity() {
       draw: `draws ${activity.data?.cardsDrawn} cards`,
       end: `ends turn`,
       play: `plays a card`,
+      discard: `discards a card`,
     };
 
     const defaultDescription = activity.action;

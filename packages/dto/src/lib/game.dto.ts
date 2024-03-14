@@ -12,16 +12,13 @@ const GameActionBodySchema = z.object({
   action: z.union([
     z.literal("drawCards"),
     z.literal("placeCard"),
+    z.literal("discard"),
     z.literal("endTurn"),
   ]),
   data: z
     .object({
       card: z.number().optional(),
-      placement: z.union([
-        z.literal("bank"),
-        z.literal("board"),
-        z.literal("discard"),
-      ]),
+      placement: z.union([z.literal("bank"), z.literal("board")]).optional(),
       color: z.string().optional(),
     })
     .optional(),

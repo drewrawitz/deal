@@ -19,6 +19,8 @@ interface ActiveGameBoardProps {
   gameId: number;
 }
 
+const MAX_ACTIONS = 3;
+
 export default function ActiveGameBoard(props: ActiveGameBoardProps) {
   const { gameId } = props;
   const queryClient = useQueryClient();
@@ -80,33 +82,48 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
   }
 
   const isCurrentTurn = state.currentTurn?.username === currentUser?.username;
-  const { hasDrawnCards } = state.currentTurn;
+  const { hasDrawnCards, actionsTaken } = state.currentTurn;
+  const hasTooManyCards = isCurrentTurn && state.myHand.length > 7;
+  const mustDiscard = hasTooManyCards && actionsTaken === MAX_ACTIONS;
 
   return (
     <Layout
       heading={`Game #${gameId}`}
       slot={
-        <div className="text-center space-y-2">
-          <div className="font-mono text-xl text-white">
-            {state.currentTurn?.username}
+        <div className="flex items-center space-x-6">
+          <div className="relative max-w-[70px]">
+            <img src={`/cards/back.jpg`} />
+            <span className="absolute bottom-0 left-0 text-center w-full bg-black bg-opacity-50 text-white font-medium">
+              96
+            </span>
           </div>
-          <div className="font-mono rounded-md bg-red-400 px-2 py-0.5 text-white">
-            You're up!
-          </div>
-          <div className="flex items-center justify-center space-x-2">
-            {Array.from({ length: 3 }, (_, i) => {
-              return state.currentTurn?.actionsTaken > i ? (
-                <span
-                  key={i}
-                  className="block h-5 w-5 rounded-full bg-red-400"
-                ></span>
-              ) : (
-                <span
-                  key={i}
-                  className="block h-5 w-5 rounded-full border-2 border-red-400"
-                ></span>
-              );
-            })}
+          {state.discardPile.length > 0 && (
+            <div className="max-w-[70px]">
+              <Card card={state.discardPile[state.discardPile.length - 1]} />
+            </div>
+          )}
+          <div className="text-center space-y-2">
+            <div className="font-mono text-xl text-white">
+              {state.currentTurn?.username}
+            </div>
+            <div className="font-mono rounded-md bg-red-400 px-2 py-0.5 text-white">
+              You're up!
+            </div>
+            <div className="flex items-center justify-center space-x-2">
+              {Array.from({ length: MAX_ACTIONS }, (_, i) => {
+                return state.currentTurn?.actionsTaken > i ? (
+                  <span
+                    key={i}
+                    className="block h-5 w-5 rounded-full bg-red-400"
+                  ></span>
+                ) : (
+                  <span
+                    key={i}
+                    className="block h-5 w-5 rounded-full border-2 border-red-400"
+                  ></span>
+                );
+              })}
+            </div>
           </div>
         </div>
       }
@@ -186,6 +203,9 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
               heading="My Hand"
               slot={
                 <>
+                  {!isCurrentTurn && (
+                    <p className="text-sm text-gray-500">Waiting for turn...</p>
+                  )}
                   {isCurrentTurn && !hasDrawnCards && (
                     <button
                       type="button"
@@ -213,7 +233,11 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                 {state.myHand?.map((card, idx) => {
                   return (
                     <li key={idx}>
-                      <Card card={card} onCardAction={onCardAction} />
+                      <Card
+                        card={card}
+                        onCardAction={isCurrentTurn ? onCardAction : undefined}
+                        mustDiscard={mustDiscard}
+                      />
                     </li>
                   );
                 })}

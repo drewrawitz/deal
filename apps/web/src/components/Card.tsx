@@ -4,16 +4,19 @@ import { GameActionBodyDto } from "@deal/dto";
 import React from "react";
 import CardActionModal from "./modals/CardActionModal";
 import { CardType } from "@deal/types";
+import DiscardCardModal from "./modals/DiscardCardModal";
 
 interface CardProps {
   card: number;
   display?: "set" | "default";
   onCardAction?: (data: GameActionBodyDto) => void;
+  mustDiscard?: boolean;
 }
 
 const Card: React.FC<CardProps> = ({
   card,
   display = "default",
+  mustDiscard = false,
   onCardAction,
 }) => {
   const data = Cards.find((c) => c.id === card) as CardType;
@@ -47,6 +50,17 @@ const Card: React.FC<CardProps> = ({
     });
   };
 
+  const onDiscard = (card: CardType) => {
+    if (!onCardAction) return;
+
+    onCardAction({
+      action: "discard",
+      data: {
+        card: card.id,
+      },
+    });
+  };
+
   const showActionModal = () => {
     NiceModal.show(CardActionModal, {
       card: data,
@@ -55,10 +69,20 @@ const Card: React.FC<CardProps> = ({
     });
   };
 
+  const showDiscardModal = () => {
+    NiceModal.show(DiscardCardModal, {
+      card: data,
+      onDiscard,
+    });
+  };
+
   const onClickCard = () => {
     if (!onCardAction) return;
 
-    if (data.type === "money") {
+    // If the player must discard a card, then show the discard modal
+    if (mustDiscard) {
+      showDiscardModal();
+    } else if (data.type === "money") {
       onCardAction({
         action: "placeCard",
         data: {

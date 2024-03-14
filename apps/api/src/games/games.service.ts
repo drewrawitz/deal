@@ -510,6 +510,39 @@ export class GamesService {
     });
   }
 
+  async handleDiscardCardAction(
+    params: HandleActionParams,
+    body: GameActionBodyDto,
+  ) {
+    const { game_id, user_id, state } = params;
+    const { data, action } = body;
+
+    // Make sure the right data is provided
+    if (!data?.card) {
+      throw new BadRequestException('You must provide a Card ID');
+    }
+
+    // Make sure this player has this card in their hand
+    const playerHand = params.state.myHand;
+
+    if (!playerHand.includes(data.card)) {
+      throw new BadRequestException("You don't have that card in your hand.");
+    }
+
+    // Make sure the player has more than 7 cards
+    if (playerHand.length <= 7) {
+      throw new BadRequestException(
+        "You can only discard cards when you're over the limit of 7",
+      );
+    }
+
+    const card = this.cardsService.getCardById(data.card);
+
+    await this.createAndSaveEvent(game_id, user_id, 'discard', {
+      card: card.id,
+    });
+  }
+
   async handlePlaceCardAction(
     params: HandleActionParams,
     body: GameActionBodyDto,
@@ -547,7 +580,7 @@ export class GamesService {
       );
     }
 
-    const card = await this.cardsService.getCardById(data.card);
+    const card = this.cardsService.getCardById(data.card);
 
     if (data.placement === 'bank') {
       await this.createAndSaveEvent(game_id, user_id, 'bank', {
@@ -606,6 +639,9 @@ export class GamesService {
         break;
       case 'placeCard':
         await this.handlePlaceCardAction(params, body);
+        break;
+      case 'discard':
+        await this.handleDiscardCardAction(params, body);
         break;
       case 'endTurn':
         await this.handleEndTurnAction(params);

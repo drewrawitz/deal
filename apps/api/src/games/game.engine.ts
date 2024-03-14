@@ -4,6 +4,7 @@ import {
   CardType,
   DealEvent,
   DealToPlayer,
+  DiscardEvent,
   DrawEvent,
   GameState,
   PlayEvent,
@@ -171,6 +172,17 @@ export class GameEngine {
     this.gameState.players[playerId].numCards--;
   }
 
+  private handleDiscardEvent(event: DiscardEvent) {
+    const card = this.getCardById(event.data.card);
+
+    if (!card) {
+      throw new Error(`Card ${event.data.card} not found`);
+    }
+
+    // Remove from hand
+    this.removeCardFromHand(event.data.card, event.player_id);
+  }
+
   private handlePlayEvent(event: PlayEvent) {
     const card = this.getCardById(event.data.card);
 
@@ -226,6 +238,9 @@ export class GameEngine {
         break;
       case 'play':
         this.handlePlayEvent(event);
+        break;
+      case 'discard':
+        this.handleDiscardEvent(event);
         break;
     }
   }

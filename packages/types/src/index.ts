@@ -132,13 +132,21 @@ export interface PlayerTurnEvent {
   };
 }
 
+export interface DiscardEvent {
+  event_type: "discard";
+  data: {
+    card: number;
+  };
+}
+
 type SpecificGameEvent =
   | ShuffleEvent
   | DealEvent
   | PlayerTurnEvent
   | DrawEvent
   | BankEvent
-  | PlayEvent;
+  | PlayEvent
+  | DiscardEvent;
 
 export type TypedGameEvent = Omit<GameEvents, "data" | "event_type"> &
   SpecificGameEvent;
