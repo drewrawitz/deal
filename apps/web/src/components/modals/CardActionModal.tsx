@@ -34,10 +34,11 @@ const CardActionModal = NiceModal.create(
       onClose();
     };
 
-    const onClickFlipCard = (card: CardType) => {
-      console.log("flip card", card);
+    const onClickFlipCard = () => {
       setFlipped(() => !isFlipped);
     };
+
+    const canFlipCard = card.type === "wildcard";
 
     return (
       <BaseModal heading={card.name} show={modal.visible} onClose={onClose}>
@@ -48,14 +49,16 @@ const CardActionModal = NiceModal.create(
               "rotate-180": isFlipped,
             })}
           />
-          <div className="text-center">
-            <button
-              className="text-sky-500 font-medium hover:underline text-sm mb-4"
-              onClick={() => onClickFlipCard(card)}
-            >
-              Flip Card
-            </button>
-          </div>
+          {canFlipCard && (
+            <div className="text-center">
+              <button
+                className="text-sky-500 font-medium hover:underline text-sm mb-4"
+                onClick={onClickFlipCard}
+              >
+                Flip Card
+              </button>
+            </div>
+          )}
           {card.description && (
             <p className="text-sm text-center mb-4">{card.description}</p>
           )}

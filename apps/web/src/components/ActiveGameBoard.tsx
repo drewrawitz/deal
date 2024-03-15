@@ -166,13 +166,12 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                               Hand: {player.numCards ?? 0}
                             </span>
                           </div>
-                          <div className="flex-1 flex items-start space-x-12">
+                          <div className="flex-1 flex items-center flex-wrap gap-4">
                             {sets?.map((set, idx) => {
-                              console.log(set);
                               return (
                                 <div
                                   className={classNames(
-                                    "flex p-1",
+                                    "flex p-1 gap-0.5",
                                     set?.[0]?.color === "green" &&
                                       "bg-[#50B636]",
                                     set?.[0]?.color === "yellow" &&
@@ -189,6 +188,8 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                                       "bg-black",
                                     set?.[0]?.color === "brown" &&
                                       "bg-[#81471D]",
+                                    set?.[0]?.color === "utility" &&
+                                      "bg-[#CCE2AE]",
                                     set?.[0]?.color === "red" && "bg-[#CE0F12]"
                                   )}
                                   key={`${player.username}-${idx}`}

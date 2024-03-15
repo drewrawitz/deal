@@ -102,7 +102,7 @@ const Card: React.FC<CardProps> = ({
     <button onClick={onClickCard}>
       <img
         src={`/cards/${card}.jpeg`}
-        className={classNames(display === "set" && "max-w-[50px]", {
+        className={classNames(display === "set" && "max-w-[80px]", {
           "rotate-180": isFlipped,
         })}
       />
