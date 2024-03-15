@@ -1,4 +1,4 @@
-import { Cards, Properties } from '@deal/models';
+import { Cards, Properties, Wildcards } from '@deal/models';
 import {
   BankEvent,
   CardType,
@@ -18,6 +18,7 @@ export class GameEngine {
   private currentUserId: string;
   private cards = Cards;
   private properties = Properties;
+  private wildcards = Wildcards;
 
   constructor(user_id: string, initialState: GameState) {
     this.currentUserId = user_id;
@@ -28,14 +29,22 @@ export class GameEngine {
     return this.cards.find((card) => card.id === card_id);
   }
 
-  private getPropertyColor(card_id: number) {
-    const find = this.properties.find(
-      (property) =>
-        property.cards.includes(card_id) ||
-        property.wildcards.includes(card_id),
+  private getPropertyColor(card_id: number, isFlipped: boolean) {
+    const find = this.properties.find((property) =>
+      property.cards.includes(card_id),
     );
 
-    return find?.color;
+    if (find) {
+      return find.color;
+    }
+
+    const wild = this.wildcards[card_id];
+    console.log({ wild });
+    if (wild) {
+      return isFlipped ? wild.flipped : wild.primary;
+    }
+
+    return undefined;
   }
 
   private calculateSets(player_id: string) {
@@ -187,18 +196,21 @@ export class GameEngine {
 
   private handlePlayEvent(event: PlayEvent) {
     const card = this.getCardById(event.data.card);
+    const { isFlipped } = event.data;
+    console.log('handle play event', event);
 
     if (!card) {
       throw new Error(`Card ${event.data.card} not found`);
     }
 
     if (['property', 'wildcard'].includes(card.type)) {
-      const color = this.getPropertyColor(card.id) ?? event.data.color;
-      console.log('get color', color);
+      const color =
+        this.getPropertyColor(card.id, isFlipped) ?? event.data.color;
 
       this.gameState.players[event.player_id].board.push({
         color,
         card: card.id,
+        isFlipped,
       });
     } else {
       // Add the card to the discard pile

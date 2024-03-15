@@ -6,3 +6,4 @@ export * from "./entity/GamePlayers";
 export * from "./entity/GameEvents";
 export { default as Cards } from "./data/cards.json";
 export { default as Properties } from "./data/properties.json";
+export { default as Wildcards } from "./data/wildcards.json";

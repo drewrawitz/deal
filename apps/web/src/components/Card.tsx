@@ -11,12 +11,14 @@ interface CardProps {
   display?: "set" | "default";
   onCardAction?: (data: GameActionBodyDto) => void;
   mustDiscard?: boolean;
+  isFlipped?: boolean;
 }
 
 const Card: React.FC<CardProps> = ({
   card,
   display = "default",
   mustDiscard = false,
+  isFlipped = false,
   onCardAction,
 }) => {
   const data = Cards.find((c) => c.id === card) as CardType;
@@ -26,7 +28,7 @@ const Card: React.FC<CardProps> = ({
     return;
   }
 
-  const onPlayAction = (card: CardType) => {
+  const onPlayAction = (card: CardType, isFlipped: boolean) => {
     if (!onCardAction) return;
 
     onCardAction({
@@ -34,6 +36,7 @@ const Card: React.FC<CardProps> = ({
       data: {
         card: card.id,
         placement: "board",
+        isFlipped,
       },
     });
   };
@@ -99,7 +102,9 @@ const Card: React.FC<CardProps> = ({
     <button onClick={onClickCard}>
       <img
         src={`/cards/${card}.jpeg`}
-        className={classNames(display === "set" && "max-w-[50px]")}
+        className={classNames(display === "set" && "max-w-[50px]", {
+          "rotate-180": isFlipped,
+        })}
       />
     </button>
   );
