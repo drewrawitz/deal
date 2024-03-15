@@ -1,10 +1,18 @@
 {
+  "39": {
+    "primary": "blue",
+    "flipped": "green"
+  },
   "42": {
     "primary": "pink",
     "flipped": "orange"
   },
   "43": {
     "primary": "green",
+    "flipped": "railroad"
+  },
+  "45": {
+    "primary": "utility",
     "flipped": "railroad"
   }
 }
