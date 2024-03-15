@@ -1,16 +1,19 @@
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { CardType } from "@deal/types";
 import BaseModal from "./BaseModal";
+import { useState } from "react";
+import { classNames } from "@deal/utils-client";
 
 interface CardActionModalProps {
   card: CardType;
-  onPlayAction: (card: CardType) => void;
+  onPlayAction: (card: CardType, isFlipped: boolean) => void;
   onAddToBank: (card: CardType) => void;
 }
 
 const CardActionModal = NiceModal.create(
   ({ card, onPlayAction, onAddToBank }: CardActionModalProps) => {
     const modal = useModal();
+    const [isFlipped, setFlipped] = useState(false);
 
     const onClose = () => {
       modal.hide();
@@ -22,7 +25,7 @@ const CardActionModal = NiceModal.create(
     };
 
     const playAction = () => {
-      onPlayAction(card);
+      onPlayAction(card, isFlipped);
       onClose();
     };
 
@@ -31,13 +34,28 @@ const CardActionModal = NiceModal.create(
       onClose();
     };
 
+    const onClickFlipCard = (card: CardType) => {
+      console.log("flip card", card);
+      setFlipped(() => !isFlipped);
+    };
+
     return (
       <BaseModal heading={card.name} show={modal.visible} onClose={onClose}>
         <div className="p-5">
           <img
             src={`/cards/${card.id}.jpeg`}
-            className="w-[100px] mx-auto mb-4"
+            className={classNames("w-[100px] mx-auto mb-4", {
+              "rotate-180": isFlipped,
+            })}
           />
+          <div className="text-center">
+            <button
+              className="text-sky-500 font-medium hover:underline text-sm mb-4"
+              onClick={() => onClickFlipCard(card)}
+            >
+              Flip Card
+            </button>
+          </div>
           {card.description && (
             <p className="text-sm text-center mb-4">{card.description}</p>
           )}

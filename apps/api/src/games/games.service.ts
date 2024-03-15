@@ -549,6 +549,7 @@ export class GamesService {
   ) {
     const { game_id, user_id, state } = params;
     const { data, action } = body;
+    const { isFlipped } = data;
 
     // Make sure the right data is provided
     if (!data?.card) {
@@ -582,6 +583,10 @@ export class GamesService {
 
     const card = this.cardsService.getCardById(data.card);
 
+    if (isFlipped && card.type !== 'wildcard') {
+      throw new BadRequestException('Only Wildcard cards can be flipped.');
+    }
+
     if (data.placement === 'bank') {
       await this.createAndSaveEvent(game_id, user_id, 'bank', {
         card: card.id,
@@ -594,6 +599,9 @@ export class GamesService {
         card: card.id,
         ...(data.color && {
           color: data.color,
+        }),
+        ...(isFlipped && {
+          isFlipped,
         }),
       });
     }
@@ -674,6 +682,9 @@ export class GamesService {
         }),
         ...(d.data?.value && {
           value: d.data.value,
+        }),
+        ...(d.data?.isFlipped && {
+          isFlipped: d.data.isFlipped,
         }),
         ...(d.data?.cardsDrawn && {
           cardsDrawn: (d.data.cardsDrawn as []).length,

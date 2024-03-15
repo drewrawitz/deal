@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Cards } from '@deal/models';
+import { CardType } from '@deal/types';
 
 @Injectable()
 export class CardsService {
@@ -23,7 +24,7 @@ export class CardsService {
     return deck;
   }
 
-  getCardById(card_id: number) {
+  getCardById(card_id: number): CardType {
     return this.cards.find((card) => card.id === card_id);
   }
 }

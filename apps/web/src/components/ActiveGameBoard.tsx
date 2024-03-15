@@ -168,6 +168,7 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                           </div>
                           <div className="flex-1 flex items-start space-x-12">
                             {sets?.map((set, idx) => {
+                              console.log(set);
                               return (
                                 <div
                                   className={classNames(
@@ -197,6 +198,7 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                                       <Card
                                         key={idx2}
                                         card={card.card}
+                                        isFlipped={card.isFlipped}
                                         display="set"
                                       />
                                     );

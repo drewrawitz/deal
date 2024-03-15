@@ -70,7 +70,9 @@ export default function Activity() {
               {activityItem.data?.card && (
                 <img
                   src={`/cards/${activityItem.data?.card}.jpeg`}
-                  className="max-w-[40px] mt-2"
+                  className={classNames("max-w-[40px] mt-2", {
+                    "rotate-180": activityItem.data?.isFlipped,
+                  })}
                 />
               )}
             </div>

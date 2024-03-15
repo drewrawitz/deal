@@ -122,6 +122,7 @@ export interface PlayEvent {
   data: {
     card: number;
     color?: string;
+    isFlipped?: boolean;
   };
 }
 
@@ -134,6 +135,7 @@ export interface PlayerTurnEvent {
 
 export interface DiscardEvent {
   event_type: "discard";
+  player_id: string;
   data: {
     card: number;
   };
@@ -162,6 +164,7 @@ export type GameActivityResponse = {
 export type GameProperties = {
   color: string;
   card: number;
+  isFlipped?: boolean;
 };
 
 export type GameState = {
