@@ -202,20 +202,23 @@ export class GameEngine {
             }, {}),
         };
         break;
-
       case 'debt_collector':
-        this.gameState.waitingForPlayers = {
-          owner: event.player_id,
-          card: card.id,
-          moneyOwed: card.charge_amount ?? 0,
-          progress: {
-            [event.data.targetPlayerId]: {
-              cards: [],
-              value: 0,
-              isComplete: false,
+        const targetPlayer = this.gameState.players[event.data.targetPlayerId];
+        // Make sure this player has cards
+        if (targetPlayer.boardValue + targetPlayer.bankValue > 0) {
+          this.gameState.waitingForPlayers = {
+            owner: event.player_id,
+            card: card.id,
+            moneyOwed: card.charge_amount ?? 0,
+            progress: {
+              [event.data.targetPlayerId]: {
+                cards: [],
+                value: 0,
+                isComplete: false,
+              },
             },
-          },
-        };
+          };
+        }
         break;
     }
   }
@@ -235,6 +238,18 @@ export class GameEngine {
     this.gameState.players[playerId].numCards--;
   }
 
+  private removeCardFromBoard(cardId: number, playerId: string) {
+    const card = this.getCardById(cardId);
+    const player = this.gameState.players[playerId];
+
+    if (!player) {
+      throw new Error(`Player not found`);
+    }
+
+    player.board = player.board.filter((c) => c.card !== cardId);
+    player.boardValue -= card.value;
+  }
+
   private removeCardFromBank(cardId: number, playerId: string) {
     const card = this.getCardById(cardId);
     const player = this.gameState.players[playerId];
@@ -243,15 +258,13 @@ export class GameEngine {
       throw new Error(`Player not found`);
     }
 
-    const playerBank = player.bank;
-    const newPlayerBank = playerBank.filter((c) => c !== cardId);
-
-    player.bank = newPlayerBank;
+    player.bank = player.bank.filter((c) => c !== cardId);
     player.bankValue -= card.value;
   }
 
   private handlePayDuesEvent(event: PayDuesEvent) {
     const { waitingForPlayers, players } = this.gameState;
+
     if (!waitingForPlayers) {
       return;
     }
@@ -264,16 +277,15 @@ export class GameEngine {
     // Handling card payment from bank
     if (event.data.from === 'bank') {
       this.removeCardFromBank(card.id, event.player_id);
-      waitingForPlayers.progress[event.player_id].value += card.value;
+      this.addCardToBank(waitingForPlayers.owner, card.id);
     }
 
-    // TODO: Allow players to pay from their board
     if (event.data.from === 'board') {
-      // coming soon
+      this.removeCardFromBoard(card.id, event.player_id);
+      this.addCardToBoard(waitingForPlayers.owner, card.id);
     }
 
-    // Transfer the card to the requester
-    this.addCardToBank(waitingForPlayers.owner, card.id);
+    waitingForPlayers.progress[event.player_id].value += card.value;
 
     const playerProgress = waitingForPlayers.progress[event.player_id];
     const player = players[event.player_id];
@@ -307,6 +319,9 @@ export class GameEngine {
 
     // Remove from hand
     this.removeCardFromHand(event.data.card, event.player_id);
+
+    // Add the card to the discard pile
+    this.gameState.discardPile.push(event.data.card);
   }
 
   private handlePlayEvent(event: PlayEvent) {

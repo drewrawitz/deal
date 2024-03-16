@@ -242,6 +242,13 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                                         key={idx2}
                                         card={card.card}
                                         isFlipped={card.isFlipped}
+                                        onPayDues={
+                                          playerOwesMoney &&
+                                          player.username ===
+                                            currentUser?.username
+                                            ? onPayDues
+                                            : undefined
+                                        }
                                         display="set"
                                       />
                                     );
