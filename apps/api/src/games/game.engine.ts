@@ -109,6 +109,7 @@ export class GameEngine {
           sets: [],
           numCards: NUM_CARDS,
           bankValue: 0,
+          boardValue: 0,
         };
       }
     }
@@ -134,6 +135,23 @@ export class GameEngine {
     }
 
     this.gameState.currentTurn.hasDrawnCards = true;
+  }
+
+  private addCardToBoard(
+    playerId: string,
+    cardId: number,
+    color = null,
+    isFlipped = false,
+  ) {
+    const card = this.getCardById(cardId);
+    const propertyColor = this.getPropertyColor(card.id, isFlipped) ?? color;
+
+    this.gameState.players[playerId].board.push({
+      color: propertyColor,
+      card: card.id,
+      isFlipped,
+    });
+    this.gameState.players[playerId].boardValue += card.value;
   }
 
   private addCardToBank(playerId: string, cardId: number) {
@@ -233,42 +251,49 @@ export class GameEngine {
   }
 
   private handlePayDuesEvent(event: PayDuesEvent) {
-    if (!this.gameState.waitingForPlayers) {
+    const { waitingForPlayers, players } = this.gameState;
+    if (!waitingForPlayers) {
       return;
     }
 
-    const ownerId = this.gameState.waitingForPlayers.owner;
     const card = this.getCardById(event.data.card);
-
     if (!card) {
       throw new Error(`Card ${event.data.card} not found`);
     }
 
+    // Handling card payment from bank
     if (event.data.from === 'bank') {
       this.removeCardFromBank(card.id, event.player_id);
-      this.gameState.waitingForPlayers.progress[event.player_id].value +=
-        card.value;
+      waitingForPlayers.progress[event.player_id].value += card.value;
+    }
+
+    // TODO: Allow players to pay from their board
+    if (event.data.from === 'board') {
+      // coming soon
     }
 
     // Transfer the card to the requester
-    this.addCardToBank(ownerId, card.id);
+    this.addCardToBank(waitingForPlayers.owner, card.id);
 
-    // Did the player meet the full amount?
+    const playerProgress = waitingForPlayers.progress[event.player_id];
+    const player = players[event.player_id];
+    const moneyOwed = waitingForPlayers.moneyOwed - playerProgress.value;
+    const hasEnoughMoney = player.bankValue + player.boardValue >= moneyOwed;
+
+    // Update completion status based on the current payment or player's total worth
     if (
-      this.gameState.waitingForPlayers.progress[event.player_id].value >=
-      this.gameState.waitingForPlayers.moneyOwed
+      playerProgress.value >= waitingForPlayers.moneyOwed ||
+      !hasEnoughMoney
     ) {
-      this.gameState.waitingForPlayers.progress[event.player_id].isComplete =
-        true;
+      playerProgress.isComplete = true;
     }
 
-    // Check if all dues have been paid
-    if (
-      this.gameState.waitingForPlayers &&
-      Object.values(this.gameState.waitingForPlayers.progress).every(
-        (v) => v.isComplete,
-      )
-    ) {
+    // Finalize if all dues have been paid or if any player can no longer pay
+    const allDuesPaid = Object.values(waitingForPlayers.progress).every(
+      (progress) => progress.isComplete,
+    );
+
+    if (allDuesPaid) {
       this.gameState.waitingForPlayers = null;
     }
   }
@@ -294,14 +319,12 @@ export class GameEngine {
     }
 
     if (['property', 'wildcard'].includes(card.type)) {
-      const color =
-        this.getPropertyColor(card.id, isFlipped) ?? event.data.color;
-
-      this.gameState.players[event.player_id].board.push({
-        color,
-        card: card.id,
+      this.addCardToBoard(
+        event.player_id,
+        card.id,
+        event.data.color,
         isFlipped,
-      });
+      );
     } else {
       // Add the card to the discard pile
       this.gameState.discardPile.push(event.data.card);
