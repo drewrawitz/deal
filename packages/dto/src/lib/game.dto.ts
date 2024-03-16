@@ -22,6 +22,7 @@ const GameActionBodySchema = z.object({
       placement: z.union([z.literal("bank"), z.literal("board")]).optional(),
       color: z.string().optional(),
       isFlipped: z.boolean().optional(),
+      targetPlayerId: z.string().optional(),
     })
     .optional(),
 });

@@ -1,11 +1,13 @@
-import { classNames } from "@deal/utils-client";
-import { useGameActivityQuery } from "@deal/hooks";
+import { classNames, getCardById } from "@deal/utils-client";
+import { useGameActivityQuery, useGameStateQuery } from "@deal/hooks";
 import { useEffect, useMemo, useRef } from "react";
 import type { GameActivityResponse } from "@deal/types";
+import { useParams } from "react-router-dom";
 
 export default function Activity() {
-  const gameId = 34;
-  const { data: activity } = useGameActivityQuery(gameId);
+  const { gameId } = useParams();
+  const { data: activity } = useGameActivityQuery(Number(gameId));
+  const { data: state } = useGameStateQuery(Number(gameId));
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const filteredActivity = useMemo(
@@ -16,12 +18,37 @@ export default function Activity() {
     [activity]
   );
 
+  const getUsernameFromId = (playerId: string) => {
+    return state?.players?.[playerId]?.username;
+  };
+
   const descriptions = (activity: GameActivityResponse) => {
+    const card = activity.data?.card ? getCardById(activity.data.card) : null;
+
+    const getPlayCardDescription = () => {
+      const conditions = [
+        {
+          cond: card?.slug === "debt_collector",
+          description: `charges ${getUsernameFromId(
+            activity.data?.targetPlayerId
+          )} 5M`,
+        },
+        {
+          cond: true,
+          description: "plays a card",
+        },
+      ];
+
+      const find = conditions.find((c) => c.cond);
+
+      return find?.description ?? "-";
+    };
+
     const mapping: Record<string, string> = {
       bank: `banks a card (${activity.data?.value}M)`,
       draw: `draws ${activity.data?.cardsDrawn} cards`,
       end: `ends turn`,
-      play: `plays a card`,
+      play: getPlayCardDescription(),
       discard: `discards a card`,
       payDues: `pays with`,
     };

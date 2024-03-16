@@ -591,7 +591,7 @@ export class GamesService {
   ) {
     const { game_id, user_id, state } = params;
     const { data, action } = body;
-    const { isFlipped } = data;
+    const { isFlipped, targetPlayerId } = data;
 
     // Make sure the right data is provided
     if (!data?.card) {
@@ -644,6 +644,9 @@ export class GamesService {
         }),
         ...(isFlipped && {
           isFlipped,
+        }),
+        ...(targetPlayerId && {
+          targetPlayerId,
         }),
       });
     }
@@ -736,6 +739,9 @@ export class GamesService {
         }),
         ...(d.data?.isFlipped && {
           isFlipped: d.data.isFlipped,
+        }),
+        ...(d.data?.targetPlayerId && {
+          targetPlayerId: d.data.targetPlayerId,
         }),
         ...(d.data?.cardsDrawn && {
           cardsDrawn: (d.data.cardsDrawn as []).length,

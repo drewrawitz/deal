@@ -123,6 +123,7 @@ export interface PlayEvent {
     card: number;
     color?: string;
     isFlipped?: boolean;
+    targetPlayerId?: string;
   };
 }
 
