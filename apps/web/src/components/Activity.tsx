@@ -23,6 +23,7 @@ export default function Activity() {
       end: `ends turn`,
       play: `plays a card`,
       discard: `discards a card`,
+      payDues: `pays with`,
     };
 
     const defaultDescription = activity.action;

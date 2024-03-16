@@ -133,6 +133,16 @@ export interface PlayerTurnEvent {
   };
 }
 
+export interface PayDuesEvent {
+  event_type: "payDues";
+  player_id: string;
+  data: {
+    card: number;
+    value: number;
+    from: "bank" | "board";
+  };
+}
+
 export interface DiscardEvent {
   event_type: "discard";
   player_id: string;
@@ -148,7 +158,8 @@ type SpecificGameEvent =
   | DrawEvent
   | BankEvent
   | PlayEvent
-  | DiscardEvent;
+  | DiscardEvent
+  | PayDuesEvent;
 
 export type TypedGameEvent = Omit<GameEvents, "data" | "event_type"> &
   SpecificGameEvent;
@@ -190,6 +201,19 @@ export type GameState = {
   deck: number[];
   discardPile: number[];
   myHand: number[];
+  waitingForPlayers: {
+    owner: string;
+    card: number;
+    moneyOwed?: number;
+    progress: Record<
+      string,
+      {
+        cards: number[];
+        value: number;
+        isComplete: boolean;
+      }
+    >;
+  } | null;
 };
 
 declare global {
