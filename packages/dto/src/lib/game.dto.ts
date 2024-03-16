@@ -14,6 +14,7 @@ const GameActionBodySchema = z.object({
     z.literal("placeCard"),
     z.literal("discard"),
     z.literal("endTurn"),
+    z.literal("payDues"),
   ]),
   data: z
     .object({

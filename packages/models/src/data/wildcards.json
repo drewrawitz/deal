@@ -14,5 +14,9 @@
   "45": {
     "primary": "utility",
     "flipped": "railroad"
+  },
+  "46": {
+    "primary": "yellow",
+    "flipped": "red"
   }
 }

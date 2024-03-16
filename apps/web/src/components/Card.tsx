@@ -10,6 +10,7 @@ interface CardProps {
   card: number;
   display?: "set" | "default";
   onCardAction?: (data: GameActionBodyDto) => void;
+  onPayDues?: (card: number) => void;
   mustDiscard?: boolean;
   isFlipped?: boolean;
 }
@@ -20,6 +21,7 @@ const Card: React.FC<CardProps> = ({
   mustDiscard = false,
   isFlipped = false,
   onCardAction,
+  onPayDues,
 }) => {
   const data = Cards.find((c) => c.id === card) as CardType;
 
@@ -80,6 +82,11 @@ const Card: React.FC<CardProps> = ({
   };
 
   const onClickCard = () => {
+    if (onPayDues) {
+      onPayDues(data.id);
+      return;
+    }
+
     if (!onCardAction) return;
 
     // If the player must discard a card, then show the discard modal

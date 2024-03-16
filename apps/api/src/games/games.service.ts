@@ -409,6 +409,7 @@ export class GamesService {
       deck: [],
       discardPile: [],
       myHand: [],
+      waitingForPlayers: null,
     };
 
     const engine = new GameEngine(user.user_id, initialState);
@@ -446,7 +447,12 @@ export class GamesService {
       throw new BadRequestException('You are not part of this game.');
     }
 
-    if (gameState.currentTurn.player_id !== user_id) {
+    const playerOwesMoney =
+      gameState.waitingForPlayers &&
+      gameState.waitingForPlayers.owner !== user_id &&
+      !gameState.waitingForPlayers.progress[user_id].isComplete;
+
+    if (gameState.currentTurn.player_id !== user_id && !playerOwesMoney) {
       throw new BadRequestException('It is not your turn.');
     }
   }
@@ -507,6 +513,42 @@ export class GamesService {
     await this.createAndSaveEvent(game_id, user_id, 'end', {});
     await this.createAndSaveEvent(game_id, null, 'playerTurn', {
       player_id: nextPlayerId,
+    });
+  }
+
+  async handlePayDuesAction(
+    params: HandleActionParams,
+    body: GameActionBodyDto,
+  ) {
+    const { game_id, user_id, state } = params;
+    const { data } = body;
+
+    // Make sure the right data is provided
+    if (!data?.card) {
+      throw new BadRequestException('You must provide a Card ID');
+    }
+
+    if (!state.waitingForPlayers) {
+      throw new BadRequestException('There are no dues to be paid.');
+    }
+
+    // Make sure this player has this card in their bank
+    const playerBank = params.state.players[user_id].bank;
+    const playerBoard = params.state.players[user_id].board;
+
+    const isFromBank = playerBank.includes(data.card);
+    const isFromBoard = playerBoard.some((b) => b.card === data.card);
+
+    if (!isFromBank && !isFromBoard) {
+      throw new BadRequestException("You don't have this card.");
+    }
+
+    const card = this.cardsService.getCardById(data.card);
+
+    await this.createAndSaveEvent(game_id, user_id, 'payDues', {
+      card: card.id,
+      value: card.value,
+      from: isFromBank ? 'bank' : 'board',
     });
   }
 
@@ -654,10 +696,19 @@ export class GamesService {
       case 'endTurn':
         await this.handleEndTurnAction(params);
         break;
+      case 'payDues':
+        await this.handlePayDuesAction(params, body);
+        break;
     }
 
     // Send a WS event to the client
-    this.gamesGateway.broadcastMessage(`game.${game_id}.action`);
+    const card = body?.data?.card
+      ? this.cardsService.getCardById(body.data.card)
+      : null;
+    this.gamesGateway.broadcastMessage(`game.${game_id}.action`, {
+      owner: user.username,
+      card,
+    });
 
     return this.gameEngine.state;
   }

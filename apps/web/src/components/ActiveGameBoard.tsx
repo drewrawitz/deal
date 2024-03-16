@@ -69,6 +69,15 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
     });
   };
 
+  const onPayDues = async (card: number) => {
+    return sendAction({
+      action: "payDues",
+      data: {
+        card,
+      },
+    });
+  };
+
   const onCardAction = async (body: GameActionBodyDto) => {
     return sendAction(body);
   };
@@ -86,6 +95,25 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
   const hasTooManyCards = isCurrentTurn && state.myHand.length > 7;
   const mustDiscard = hasTooManyCards && actionsTaken === MAX_ACTIONS;
   const deckLength = state.deck.length;
+  const isWaitingForOtherPlayers =
+    state.waitingForPlayers?.owner === currentUser?.user_id;
+
+  const playerOwesMoney =
+    state.waitingForPlayers &&
+    state.waitingForPlayers?.owner !== currentUser?.user_id &&
+    !state.waitingForPlayers?.progress[currentUser?.user_id].isComplete;
+
+  const getPlayerUsernameFromId = (id: string) => {
+    return state.players[id].username;
+  };
+
+  const moneyLeftOwed =
+    playerOwesMoney && state.waitingForPlayers?.moneyOwed
+      ? `${
+          state.waitingForPlayers?.moneyOwed -
+          state.waitingForPlayers.progress[currentUser.user_id].value
+        }M`
+      : "";
 
   return (
     <Layout
@@ -215,36 +243,7 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                 })}
               </div>
             </Section>
-            <Section
-              heading="My Hand"
-              slot={
-                <>
-                  {!isCurrentTurn && (
-                    <p className="text-sm text-gray-500">Waiting for turn...</p>
-                  )}
-                  {isCurrentTurn && !hasDrawnCards && (
-                    <button
-                      type="button"
-                      onClick={onClickDrawCards}
-                      disabled={isProcessing}
-                      className="rounded-md bg-green-600 hover:bg-green-600/80 px-4 py-2 text-sm font-semibold text-white border-none disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Draw Cards
-                    </button>
-                  )}
-                  {isCurrentTurn && hasDrawnCards && (
-                    <button
-                      type="button"
-                      onClick={onClickEndTurn}
-                      disabled={isProcessing}
-                      className="rounded-md bg-red-600 hover:bg-red-600/80 px-4 py-2 text-sm font-semibold text-white border-none disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      End Turn
-                    </button>
-                  )}
-                </>
-              }
-            >
+            <Section heading="My Hand">
               <ul className="grid grid-cols-7 gap-2">
                 {state.myHand?.map((card, idx) => {
                   return (
@@ -269,7 +268,10 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                   {state.players[currentUser.user_id].bank?.map((card, idx) => {
                     return (
                       <li key={idx}>
-                        <Card card={card} />
+                        <Card
+                          card={card}
+                          onPayDues={playerOwesMoney ? onPayDues : undefined}
+                        />
                       </li>
                     );
                   })}
@@ -280,6 +282,47 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
         </div>
 
         <div className="grid grid-cols-1 gap-4">
+          <Section heading="Action">
+            <>
+              {state.waitingForPlayers && playerOwesMoney ? (
+                <p className="text-sm font-bold text-gray-800">
+                  You owe{" "}
+                  <span className="bg-red-700 text-white py-1 px-2 rounded-md">
+                    {getPlayerUsernameFromId(state.waitingForPlayers.owner)}
+                  </span>{" "}
+                  {moneyLeftOwed}
+                </p>
+              ) : !isCurrentTurn ? (
+                <p className="text-sm text-gray-500">Waiting for turn...</p>
+              ) : null}
+              {isCurrentTurn && !hasDrawnCards && (
+                <button
+                  type="button"
+                  onClick={onClickDrawCards}
+                  disabled={isProcessing}
+                  className="rounded-md bg-green-600 hover:bg-green-600/80 px-4 py-2 text-sm font-semibold text-white border-none disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Draw Cards
+                </button>
+              )}
+              {isCurrentTurn && isWaitingForOtherPlayers && (
+                <p className="text-sm font-bold text-gray-800">
+                  Waiting for all players to pay{" "}
+                  {state.waitingForPlayers?.moneyOwed}M...
+                </p>
+              )}
+              {isCurrentTurn && hasDrawnCards && !isWaitingForOtherPlayers && (
+                <button
+                  type="button"
+                  onClick={onClickEndTurn}
+                  disabled={isProcessing}
+                  className="rounded-md bg-red-600 hover:bg-red-600/80 px-4 py-2 text-sm font-semibold text-white border-none disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  End Turn
+                </button>
+              )}
+            </>
+          </Section>
           <Section heading="Match History">
             <Activity />
           </Section>
