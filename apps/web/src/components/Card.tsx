@@ -1,5 +1,5 @@
 import NiceModal from "@ebay/nice-modal-react";
-import { Cards, classNames } from "@deal/utils-client";
+import { classNames, getCardById } from "@deal/utils-client";
 import { GameActionBodyDto } from "@deal/dto";
 import React from "react";
 import CardActionModal from "./modals/CardActionModal";
@@ -8,6 +8,7 @@ import DiscardCardModal from "./modals/DiscardCardModal";
 
 interface CardProps {
   card: number;
+  gameId: number;
   display?: "set" | "default";
   onCardAction?: (data: GameActionBodyDto) => void;
   onPayDues?: (card: number) => void;
@@ -17,20 +18,25 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({
   card,
+  gameId,
   display = "default",
   mustDiscard = false,
   isFlipped = false,
   onCardAction,
   onPayDues,
 }) => {
-  const data = Cards.find((c) => c.id === card) as CardType;
+  const data = getCardById(card);
 
   if (!data) {
     console.error(`Card ${card} not found`);
     return;
   }
 
-  const onPlayAction = (card: CardType, isFlipped: boolean) => {
+  const onPlayAction = (
+    card: CardType,
+    isFlipped: boolean,
+    playerId?: string
+  ) => {
     if (!onCardAction) return;
 
     onCardAction({
@@ -39,6 +45,9 @@ const Card: React.FC<CardProps> = ({
         card: card.id,
         placement: "board",
         isFlipped,
+        ...(playerId && {
+          targetPlayerId: playerId,
+        }),
       },
     });
   };
@@ -68,6 +77,7 @@ const Card: React.FC<CardProps> = ({
 
   const showActionModal = () => {
     NiceModal.show(CardActionModal, {
+      gameId,
       card: data,
       onPlayAction,
       onAddToBank,

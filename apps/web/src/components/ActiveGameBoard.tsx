@@ -128,7 +128,10 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
           </div>
           {state.discardPile.length > 0 && (
             <div className="max-w-[70px]">
-              <Card card={state.discardPile[state.discardPile.length - 1]} />
+              <Card
+                gameId={gameId}
+                card={state.discardPile[state.discardPile.length - 1]}
+              />
             </div>
           )}
           <div className="text-center space-y-2">
@@ -225,6 +228,7 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                                   {set.map((card, idx2) => {
                                     return (
                                       <Card
+                                        gameId={gameId}
                                         key={idx2}
                                         card={card.card}
                                         isFlipped={card.isFlipped}
@@ -249,6 +253,7 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                   return (
                     <li key={idx}>
                       <Card
+                        gameId={gameId}
                         card={card}
                         onCardAction={isCurrentTurn ? onCardAction : undefined}
                         mustDiscard={mustDiscard}
@@ -269,6 +274,7 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
                     return (
                       <li key={idx}>
                         <Card
+                          gameId={gameId}
                           card={card}
                           onPayDues={playerOwesMoney ? onPayDues : undefined}
                         />

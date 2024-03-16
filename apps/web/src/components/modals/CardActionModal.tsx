@@ -1,19 +1,37 @@
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { CardType } from "@deal/types";
 import BaseModal from "./BaseModal";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { classNames } from "@deal/utils-client";
+import { useAuthQuery, useGameStateQuery } from "@deal/hooks";
 
 interface CardActionModalProps {
   card: CardType;
-  onPlayAction: (card: CardType, isFlipped: boolean) => void;
+  gameId: number;
+  onPlayAction: (card: CardType, isFlipped: boolean, playerId?: string) => void;
   onAddToBank: (card: CardType) => void;
 }
 
 const CardActionModal = NiceModal.create(
-  ({ card, onPlayAction, onAddToBank }: CardActionModalProps) => {
+  ({ card, gameId, onPlayAction, onAddToBank }: CardActionModalProps) => {
     const modal = useModal();
+    const selectedPlayerRef = useRef<HTMLSelectElement>(null);
+    const { data: currentUser } = useAuthQuery();
+    const { data: state } = useGameStateQuery(gameId);
     const [isFlipped, setFlipped] = useState(false);
+
+    const players = (state?.players ? Object.entries(state.players) : []).map(
+      ([value, user]) => ({
+        label: user.username,
+        value,
+      })
+    );
+    const playersMinusCurrentUser = players.filter(
+      (p) => p.value !== currentUser?.user_id
+    );
+    const mustSelectPlayer = (["debt_collector"] as string[]).includes(
+      card.slug
+    );
 
     const onClose = () => {
       modal.hide();
@@ -25,7 +43,8 @@ const CardActionModal = NiceModal.create(
     };
 
     const playAction = () => {
-      onPlayAction(card, isFlipped);
+      const playerId = selectedPlayerRef.current?.value;
+      onPlayAction(card, isFlipped, playerId);
       onClose();
     };
 
@@ -61,6 +80,32 @@ const CardActionModal = NiceModal.create(
           )}
           {card.description && (
             <p className="text-sm text-center mb-4">{card.description}</p>
+          )}
+          {mustSelectPlayer && (
+            <div className="mb-3">
+              <label
+                htmlFor="player"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Player
+              </label>
+              <div className="mt-2">
+                <select
+                  id="player"
+                  name="player"
+                  ref={selectedPlayerRef}
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                >
+                  {playersMinusCurrentUser.map((p) => {
+                    return (
+                      <option key={p.value} value={p.value}>
+                        {p.label}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            </div>
           )}
           <button
             type="button"
