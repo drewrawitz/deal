@@ -26,22 +26,13 @@ export default function Activity() {
     const card = activity.data?.card ? getCardById(activity.data.card) : null;
 
     const getPlayCardDescription = () => {
-      const conditions = [
-        {
-          cond: card?.slug === "debt_collector",
-          description: `charges ${getUsernameFromId(
-            activity.data?.targetPlayerId
-          )} 5M`,
-        },
-        {
-          cond: true,
-          description: "plays a card",
-        },
-      ];
+      if (card?.slug === "debt_collector") {
+        return `charges ${getUsernameFromId(activity.data?.targetPlayerId)} ${
+          card.charge_amount
+        }M`;
+      }
 
-      const find = conditions.find((c) => c.cond);
-
-      return find?.description ?? "-";
+      return "plays a card";
     };
 
     const mapping: Record<string, string> = {

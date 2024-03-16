@@ -104,6 +104,10 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
     !state.waitingForPlayers?.progress[currentUser?.user_id].isComplete;
 
   const getPlayerUsernameFromId = (id: string) => {
+    if (!state?.players?.[id]) {
+      return null;
+    }
+
     return state.players[id].username;
   };
 
@@ -114,6 +118,12 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
           state.waitingForPlayers.progress[currentUser.user_id].value
         }M`
       : "";
+
+  const playerKeys = Object.keys(state.waitingForPlayers?.progress ?? {});
+  const waitingForPlayersText =
+    playerKeys.length > 1
+      ? "all players"
+      : getPlayerUsernameFromId(playerKeys[0]);
 
   return (
     <Layout
@@ -313,8 +323,8 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
               )}
               {isCurrentTurn && isWaitingForOtherPlayers && (
                 <p className="text-sm font-bold text-gray-800">
-                  Waiting for all players to pay{" "}
-                  {state.waitingForPlayers?.moneyOwed}M...
+                  Waiting for {waitingForPlayersText} to pay{" "}
+                  {state.waitingForPlayers?.moneyOwed}M
                 </p>
               )}
               {isCurrentTurn && hasDrawnCards && !isWaitingForOtherPlayers && (

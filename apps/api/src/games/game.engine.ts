@@ -184,6 +184,21 @@ export class GameEngine {
             }, {}),
         };
         break;
+
+      case 'debt_collector':
+        this.gameState.waitingForPlayers = {
+          owner: event.player_id,
+          card: card.id,
+          moneyOwed: card.charge_amount ?? 0,
+          progress: {
+            [event.data.targetPlayerId]: {
+              cards: [],
+              value: 0,
+              isComplete: false,
+            },
+          },
+        };
+        break;
     }
   }
 

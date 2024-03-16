@@ -16,6 +16,7 @@ export type CardType = {
   type: "action" | "money" | "rent" | "wildcard" | "property";
   value: number;
   deck_quantity: number;
+  charge_amount?: number;
   photo: string | null;
 };
 
