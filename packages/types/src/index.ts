@@ -195,6 +195,7 @@ export type GameState = {
       hand?: number[];
       bank: number[];
       board: GameProperties[];
+      boardValue: number;
       bankValue: number;
       numCards: number;
       sets: any;
