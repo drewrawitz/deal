@@ -5,10 +5,10 @@ import React from "react";
 import CardActionModal from "./modals/CardActionModal";
 import { CardType } from "@deal/types";
 import DiscardCardModal from "./modals/DiscardCardModal";
+import { useGameEngine } from "../providers/game.context";
 
 interface CardProps {
   card: number;
-  gameId: number;
   display?: "set" | "default";
   onCardAction?: (data: GameActionBodyDto) => void;
   onPayDues?: (card: number) => void;
@@ -18,13 +18,13 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({
   card,
-  gameId,
   display = "default",
   mustDiscard = false,
   isFlipped = false,
   onCardAction,
   onPayDues,
 }) => {
+  const { state } = useGameEngine();
   const data = getCardById(card);
 
   if (!data) {
@@ -77,8 +77,8 @@ const Card: React.FC<CardProps> = ({
 
   const showActionModal = () => {
     NiceModal.show(CardActionModal, {
-      gameId,
       card: data,
+      state,
       onPlayAction,
       onAddToBank,
     });

@@ -4,7 +4,12 @@ import Layout from "../Layout";
 import Chat from "../components/Chat";
 import Section from "../components/Section";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuthQuery, useGameQuery } from "@deal/hooks";
+import {
+  useAuthQuery,
+  useGameActivityQuery,
+  useGameQuery,
+  useGameStateQuery,
+} from "@deal/hooks";
 import { useEffect, useState } from "react";
 import { socket } from "../socket";
 import AudioPlayer from "../components/AudioPlayer";
@@ -15,6 +20,7 @@ import KickPlayerButton from "../components/KickPlayerButton";
 import { useQueryClient } from "@tanstack/react-query";
 import StartGameButton from "../components/StartGameButton";
 import ActiveGameBoard from "../components/ActiveGameBoard";
+import { GameProvider } from "../providers/game.context";
 
 function NotFound() {
   return (
@@ -30,6 +36,10 @@ export default function GameDetail() {
   const { data: currentUser } = useAuthQuery();
   const { gameId } = useParams();
   const navigate = useNavigate();
+  const { data: state, isInitialLoading: isStateLoading } = useGameStateQuery(
+    Number(gameId)
+  );
+  const { data: activity } = useGameActivityQuery(Number(gameId));
   const queryClient = useQueryClient();
   const [currentSound, setCurrentSound] = useState<SoundTriggers | null>(null);
   const { data, refetch, isInitialLoading, isError } = useGameQuery(
@@ -183,5 +193,18 @@ export default function GameDetail() {
     );
   }
 
-  return <ActiveGameBoard gameId={Number(gameId)} />;
+  return (
+    <>
+      {state && activity && (
+        <GameProvider
+          state={state}
+          activity={activity}
+          gameId={Number(gameId)}
+          isLoading={isStateLoading}
+        >
+          <ActiveGameBoard />
+        </GameProvider>
+      )}
+    </>
+  );
 }

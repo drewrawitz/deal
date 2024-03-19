@@ -3,28 +3,20 @@ import Activity from "./Activity";
 import Layout from "../Layout";
 import Section from "./Section";
 import Chat from "./Chat";
-import {
-  useAuthQuery,
-  useGameStateQuery,
-  useGamesMutations,
-} from "@deal/hooks";
+import { useAuthQuery, useGamesMutations } from "@deal/hooks";
 import { useEffect, useState } from "react";
 import { handleError } from "../utils/shared";
 import { socket } from "../socket";
 import Card from "./Card";
 import { GameActionBodyDto } from "@deal/dto";
 import { useQueryClient } from "@tanstack/react-query";
-
-interface ActiveGameBoardProps {
-  gameId: number;
-}
+import { useGameEngine } from "../providers/game.context";
 
 const MAX_ACTIONS = 3;
 
-export default function ActiveGameBoard(props: ActiveGameBoardProps) {
-  const { gameId } = props;
+export default function ActiveGameBoard() {
   const queryClient = useQueryClient();
-  const { data: state, isInitialLoading } = useGameStateQuery(gameId);
+  const { gameId, state, isLoading } = useGameEngine();
   const { data: currentUser } = useAuthQuery();
   const { gameActionMutation } = useGamesMutations();
   const [isProcessing, setProcessing] = useState(false);
@@ -82,7 +74,7 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
     return sendAction(body);
   };
 
-  if (isInitialLoading) {
+  if (isLoading) {
     return <Layout heading="Loading...">&nbsp;</Layout>;
   }
 
