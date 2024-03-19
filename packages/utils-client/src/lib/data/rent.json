@@ -1,0 +1,14 @@
+{
+  "48": {
+    "colors": ["green", "blue"]
+  },
+  "50": {
+    "colors": ["pink", "orange"]
+  },
+  "51": {
+    "colors": ["railroad", "utility"]
+  },
+  "52": {
+    "colors": ["red", "yellow"]
+  }
+}

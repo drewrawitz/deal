@@ -32,6 +32,10 @@ export default function Activity() {
         }M`;
       }
 
+      if (card?.type === "rent") {
+        return `charges all players ${activity.data.rentCharged}M`;
+      }
+
       return "plays a card";
     };
 

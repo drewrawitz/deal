@@ -22,7 +22,7 @@ import {
 } from '@deal/dto';
 import { GameEngine } from './game.engine';
 import { GamesGateway } from './games.gateway';
-import { paginateResponse } from '@deal/utils-client';
+import { Rent, paginateResponse } from '@deal/utils-client';
 
 interface HandleActionParams {
   game_id: number;
@@ -46,6 +46,8 @@ const selectGameFields = [
 
 @Injectable()
 export class GamesService {
+  private rent = Rent;
+
   constructor(
     @InjectRepository(Game)
     private readonly gameRepo: Repository<Game>,
@@ -557,7 +559,7 @@ export class GamesService {
     body: GameActionBodyDto,
   ) {
     const { game_id, user_id, state } = params;
-    const { data, action } = body;
+    const { data } = body;
 
     // Make sure the right data is provided
     if (!data?.card) {
@@ -565,7 +567,7 @@ export class GamesService {
     }
 
     // Make sure this player has this card in their hand
-    const playerHand = params.state.myHand;
+    const playerHand = state.myHand;
 
     if (!playerHand.includes(data.card)) {
       throw new BadRequestException("You don't have that card in your hand.");
@@ -583,6 +585,29 @@ export class GamesService {
     await this.createAndSaveEvent(game_id, user_id, 'discard', {
       card: card.id,
     });
+  }
+
+  calculateRentCharged(userId: string, cardId: number, state: GameState) {
+    const rent = this.rent[cardId];
+
+    if (!rent) {
+      throw new BadRequestException('This card is not a rent card');
+    }
+
+    const { colors } = rent;
+    const player = state.players[userId];
+
+    return colors
+      .map((color: string) =>
+        player.board
+          .filter((boardItem) => boardItem.color === color)
+          .reduce((totalValue, boardItem) => totalValue + boardItem.value, 0),
+      )
+      .reduce(
+        (maxValue: number, colorValue: number) =>
+          Math.max(maxValue, colorValue),
+        0,
+      );
   }
 
   async handlePlaceCardAction(
@@ -623,10 +648,20 @@ export class GamesService {
       );
     }
 
+    if (state.waitingForPlayers?.owner === user_id) {
+      throw new BadRequestException('Waiting for players...');
+    }
+
     const card = this.cardsService.getCardById(data.card);
 
     if (isFlipped && card.type !== 'wildcard') {
       throw new BadRequestException('Only Wildcard cards can be flipped.');
+    }
+
+    let rentCharged = 0;
+
+    if (card.type === 'rent') {
+      rentCharged = this.calculateRentCharged(user_id, card.id, params.state);
     }
 
     if (data.placement === 'bank') {
@@ -641,6 +676,9 @@ export class GamesService {
         card: card.id,
         ...(data.color && {
           color: data.color,
+        }),
+        ...(rentCharged && {
+          rentCharged,
         }),
         ...(isFlipped && {
           isFlipped,
@@ -731,18 +769,7 @@ export class GamesService {
       username: d.player?.username ?? null,
       action: d.event_type,
       data: {
-        ...(d.data?.card && {
-          card: d.data.card,
-        }),
-        ...(d.data?.value && {
-          value: d.data.value,
-        }),
-        ...(d.data?.isFlipped && {
-          isFlipped: d.data.isFlipped,
-        }),
-        ...(d.data?.targetPlayerId && {
-          targetPlayerId: d.data.targetPlayerId,
-        }),
+        ...d.data,
         ...(d.data?.cardsDrawn && {
           cardsDrawn: (d.data.cardsDrawn as []).length,
         }),
