@@ -2,7 +2,7 @@ import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { CardType } from "@deal/types";
 import BaseModal from "./BaseModal";
 import { useRef, useState } from "react";
-import { classNames } from "@deal/utils-client";
+import { classNames, Rent } from "@deal/utils-client";
 import { useAuthQuery, useGameStateQuery } from "@deal/hooks";
 
 interface CardActionModalProps {
@@ -57,7 +57,19 @@ const CardActionModal = NiceModal.create(
       setFlipped(() => !isFlipped);
     };
 
-    const canFlipCard = card.type === "wildcard";
+    const canFlipCard = card.type === "wildcard" && card.slug !== "wc_all";
+    let canPlayActionCard = true;
+
+    if (card.type === "rent") {
+      const rentColors = Rent?.[String(card.id) as keyof typeof Rent]?.colors;
+      const hasOverlap = state?.players[currentUser?.user_id].board.some(
+        (item) => rentColors?.includes(item.color)
+      );
+
+      if (!hasOverlap) {
+        canPlayActionCard = false;
+      }
+    }
 
     return (
       <BaseModal heading={card.name} show={modal.visible} onClose={onClose}>
@@ -110,7 +122,8 @@ const CardActionModal = NiceModal.create(
           <button
             type="button"
             onClick={playAction}
-            className="rounded-md w-full bg-gray-800 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-900 hover:bg-gray-800/80"
+            disabled={!canPlayActionCard}
+            className="rounded-md w-full bg-gray-800 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-900 hover:enabled:bg-gray-800/80 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Play Action Card
           </button>

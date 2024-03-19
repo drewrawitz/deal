@@ -1,4 +1,5 @@
 import { Cards, Properties, Wildcards } from '@deal/models';
+import { Rent } from '@deal/utils-client';
 import {
   BankEvent,
   CardType,
@@ -20,6 +21,7 @@ export class GameEngine {
   private cards = Cards;
   private properties = Properties;
   private wildcards = Wildcards;
+  private rent = Rent;
 
   constructor(user_id: string, initialState: GameState) {
     this.currentUserId = user_id;
@@ -149,6 +151,7 @@ export class GameEngine {
     this.gameState.players[playerId].board.push({
       color: propertyColor,
       card: card.id,
+      value: card.value,
       isFlipped,
     });
     this.gameState.players[playerId].boardValue += card.value;
@@ -174,6 +177,21 @@ export class GameEngine {
   }
 
   private handleActionCards(card: CardType, event: PlayEvent) {
+    switch (card.type) {
+      case 'rent':
+        this.gameState.waitingForPlayers = {
+          owner: event.player_id,
+          card: card.id,
+          moneyOwed: event.data.rentCharged,
+          progress: Object.fromEntries(
+            Object.keys(this.gameState.players)
+              .filter((p) => p !== event.player_id)
+              .map((playerId) => [playerId, { value: 0, isComplete: false }]),
+          ),
+        };
+
+        break;
+    }
     switch (card.slug) {
       case 'pass_go':
         const CARDS_TO_DRAW = 2;
@@ -194,7 +212,6 @@ export class GameEngine {
             .filter((p) => p !== event.player_id)
             .reduce((acc, player) => {
               acc[player] = {
-                cards: [],
                 value: 0,
                 isComplete: false,
               };
@@ -212,7 +229,6 @@ export class GameEngine {
             moneyOwed: card.charge_amount ?? 0,
             progress: {
               [event.data.targetPlayerId]: {
-                cards: [],
                 value: 0,
                 isComplete: false,
               },

@@ -17,6 +17,7 @@
     "type": "action",
     "value": 3,
     "deck_quantity": 3,
+    "charge_amount": 5,
     "photo": null
   },
   {

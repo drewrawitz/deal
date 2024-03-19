@@ -98,11 +98,6 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
   const isWaitingForOtherPlayers =
     state.waitingForPlayers?.owner === currentUser?.user_id;
 
-  const playerOwesMoney =
-    state.waitingForPlayers &&
-    state.waitingForPlayers?.owner !== currentUser?.user_id &&
-    !state.waitingForPlayers?.progress[currentUser?.user_id].isComplete;
-
   const getPlayerUsernameFromId = (id: string) => {
     if (!state?.players?.[id]) {
       return null;
@@ -111,13 +106,24 @@ export default function ActiveGameBoard(props: ActiveGameBoardProps) {
     return state.players[id].username;
   };
 
-  const moneyLeftOwed =
-    playerOwesMoney && state.waitingForPlayers?.moneyOwed
-      ? `${
-          state.waitingForPlayers?.moneyOwed -
-          state.waitingForPlayers.progress[currentUser.user_id].value
-        }M`
-      : "";
+  const isCurrentUserPlaying =
+    state.waitingForPlayers?.owner !== currentUser?.user_id;
+  const currentUserProgress =
+    state.waitingForPlayers?.progress?.[currentUser?.user_id];
+
+  const playerOwesMoney = Boolean(
+    state.waitingForPlayers &&
+      currentUserProgress &&
+      isCurrentUserPlaying &&
+      !currentUserProgress?.isComplete
+  );
+
+  let moneyLeftOwed = "";
+  if (playerOwesMoney && currentUserProgress) {
+    const moneyOwed = state.waitingForPlayers?.moneyOwed ?? 0;
+    const moneyLeft = moneyOwed - currentUserProgress.value;
+    moneyLeftOwed = `${moneyLeft}M`;
+  }
 
   const playerKeys = Object.keys(state.waitingForPlayers?.progress ?? {});
   const waitingForPlayersText =

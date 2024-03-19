@@ -125,6 +125,7 @@ export interface PlayEvent {
     color?: string;
     isFlipped?: boolean;
     targetPlayerId?: string;
+    rentCharged?: number;
   };
 }
 
@@ -177,7 +178,9 @@ export type GameActivityResponse = {
 export type GameProperties = {
   color: string;
   card: number;
+  value: number;
   isFlipped?: boolean;
+  rentCharged?: number;
 };
 
 export type GameState = {
@@ -211,7 +214,6 @@ export type GameState = {
     progress: Record<
       string,
       {
-        cards: number[];
         value: number;
         isComplete: boolean;
       }
