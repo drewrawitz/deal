@@ -1,5 +1,4 @@
 import { Cards, Properties, Wildcards } from '@deal/models';
-import { Rent } from '@deal/utils-client';
 import {
   BankEvent,
   CardType,
@@ -21,7 +20,6 @@ export class GameEngine {
   private cards = Cards;
   private properties = Properties;
   private wildcards = Wildcards;
-  private rent = Rent;
 
   constructor(user_id: string, initialState: GameState) {
     this.currentUserId = user_id;

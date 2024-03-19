@@ -1,13 +1,10 @@
 import { classNames, getCardById } from "@deal/utils-client";
-import { useGameActivityQuery, useGameStateQuery } from "@deal/hooks";
 import { useEffect, useMemo, useRef } from "react";
 import type { GameActivityResponse } from "@deal/types";
-import { useParams } from "react-router-dom";
+import { useGameEngine } from "../providers/game.context";
 
 export default function Activity() {
-  const { gameId } = useParams();
-  const { data: activity } = useGameActivityQuery(Number(gameId));
-  const { data: state } = useGameStateQuery(Number(gameId));
+  const { state, activity } = useGameEngine();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const filteredActivity = useMemo(
@@ -32,8 +29,12 @@ export default function Activity() {
         }M`;
       }
 
+      if (card?.slug === "birthday") {
+        return `charges everyone ${card.value}M`;
+      }
+
       if (card?.type === "rent") {
-        return `charges all players ${activity.data.rentCharged}M`;
+        return `charges everyone rent (${activity.data.rentCharged}M)`;
       }
 
       return "plays a card";

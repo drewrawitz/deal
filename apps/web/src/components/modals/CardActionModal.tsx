@@ -1,23 +1,22 @@
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
-import { CardType } from "@deal/types";
+import { CardType, GameState } from "@deal/types";
 import BaseModal from "./BaseModal";
 import { useRef, useState } from "react";
 import { classNames, Rent } from "@deal/utils-client";
-import { useAuthQuery, useGameStateQuery } from "@deal/hooks";
+import { useAuthQuery } from "@deal/hooks";
 
 interface CardActionModalProps {
   card: CardType;
-  gameId: number;
+  state: GameState;
   onPlayAction: (card: CardType, isFlipped: boolean, playerId?: string) => void;
   onAddToBank: (card: CardType) => void;
 }
 
 const CardActionModal = NiceModal.create(
-  ({ card, gameId, onPlayAction, onAddToBank }: CardActionModalProps) => {
+  ({ card, state, onPlayAction, onAddToBank }: CardActionModalProps) => {
     const modal = useModal();
     const selectedPlayerRef = useRef<HTMLSelectElement>(null);
     const { data: currentUser } = useAuthQuery();
-    const { data: state } = useGameStateQuery(gameId);
     const [isFlipped, setFlipped] = useState(false);
 
     const players = (state?.players ? Object.entries(state.players) : []).map(
